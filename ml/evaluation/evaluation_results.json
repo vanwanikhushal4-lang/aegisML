@@ -1,0 +1,38 @@
+{
+  "Rule Engine (Current AEGIS Baseline)": {
+    "roc_auc": 0.9686692061743694,
+    "pr_auc": 0.8067255665812769,
+    "brier_score": 0.04857804074720355,
+    "fpr_at_98_recall": 0.11771995043370508,
+    "operating_threshold": 0.2673737373737374
+  },
+  "Logistic Regression (L2)": {
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 6.687923450954258e-05,
+    "fpr_at_98_recall": 0.0,
+    "operating_threshold": 0.9207070707070707
+  },
+  "Random Forest": {
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.008553541351536721,
+    "fpr_at_98_recall": 0.0,
+    "operating_threshold": 0.5643434343434344
+  },
+  "Gradient Boosted Trees (Raw P5 Model)": {
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.04462490610053798,
+    "fpr_at_98_recall": 0.0,
+    "operating_threshold": 0.049595959595959596
+  },
+  "Calibrated GBT (Sigmoid CV)": {
+    "roc_auc": 1.0,
+    "pr_auc": 1.0000000000000002,
+    "brier_score": 0.039135556439717965,
+    "fpr_at_98_recall": 0.0,
+    "operating_threshold": 0.11888888888888888
+  },
+  "allowlist_gate_passed": true
+}

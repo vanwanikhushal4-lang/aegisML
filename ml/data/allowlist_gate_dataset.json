@@ -1,0 +1,343 @@
+[
+  {
+    "package_name": "com.sbi.lotusintouch",
+    "app_name": "YONO SBI",
+    "is_system_app": false,
+    "is_sideloaded": false,
+    "target_sdk": 34,
+    "min_sdk": 24,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CAMERA",
+      "android.permission.USE_BIOMETRIC",
+      "android.permission.READ_CONTACTS",
+      "android.permission.POST_NOTIFICATIONS"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://sbiyono.sbi",
+      "javax.crypto.Cipher",
+      "androidx.biometric.BiometricPrompt",
+      "okhttp3.OkHttpClient",
+      "content://contacts"
+    ],
+    "manifest": {
+      "exported_activities": 2,
+      "exported_services": 0,
+      "exported_receivers": 1,
+      "has_boot_receiver": false,
+      "has_sms_receiver": false,
+      "has_foreground_service": false,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 24
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 30.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_allowlist",
+    "release_year": 2023
+  },
+  {
+    "package_name": "com.phonepe.app",
+    "app_name": "PhonePe: Secure Payments",
+    "is_system_app": false,
+    "is_sideloaded": false,
+    "target_sdk": 34,
+    "min_sdk": 23,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CAMERA",
+      "android.permission.READ_CONTACTS",
+      "android.permission.USE_BIOMETRIC",
+      "android.permission.RECEIVE_SMS",
+      "android.permission.READ_SMS"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://phonepe.com",
+      "android.telephony.SmsManager",
+      "content://sms",
+      "androidx.camera.view.PreviewView",
+      "javax.crypto.Cipher"
+    ],
+    "manifest": {
+      "exported_activities": 3,
+      "exported_services": 1,
+      "exported_receivers": 2,
+      "has_boot_receiver": false,
+      "has_sms_receiver": true,
+      "has_foreground_service": true,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 32
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 25.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_allowlist",
+    "release_year": 2023
+  },
+  {
+    "package_name": "net.one97.paytm",
+    "app_name": "Paytm: Secure UPI Payments",
+    "is_system_app": false,
+    "is_sideloaded": false,
+    "target_sdk": 34,
+    "min_sdk": 23,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CAMERA",
+      "android.permission.READ_CONTACTS",
+      "android.permission.USE_BIOMETRIC",
+      "android.permission.RECEIVE_SMS",
+      "android.permission.READ_SMS"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://paytm.com",
+      "android.telephony.SmsManager",
+      "content://sms",
+      "androidx.security.crypto.EncryptedSharedPreferences"
+    ],
+    "manifest": {
+      "exported_activities": 4,
+      "exported_services": 2,
+      "exported_receivers": 2,
+      "has_boot_receiver": false,
+      "has_sms_receiver": true,
+      "has_foreground_service": true,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 40
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 25.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_allowlist",
+    "release_year": 2023
+  },
+  {
+    "package_name": "com.google.android.apps.nbu.paisa.user",
+    "app_name": "Google Pay: Save and Pay",
+    "is_system_app": false,
+    "is_sideloaded": false,
+    "target_sdk": 34,
+    "min_sdk": 23,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CAMERA",
+      "android.permission.READ_CONTACTS",
+      "android.permission.USE_BIOMETRIC"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://pay.google.com",
+      "com.google.android.gms",
+      "javax.crypto.Cipher"
+    ],
+    "manifest": {
+      "exported_activities": 2,
+      "exported_services": 1,
+      "exported_receivers": 1,
+      "has_boot_receiver": false,
+      "has_sms_receiver": false,
+      "has_foreground_service": false,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 28
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 30.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_allowlist",
+    "release_year": 2023
+  },
+  {
+    "package_name": "com.whatsapp",
+    "app_name": "WhatsApp Messenger",
+    "is_system_app": false,
+    "is_sideloaded": false,
+    "target_sdk": 34,
+    "min_sdk": 21,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.CAMERA",
+      "android.permission.RECORD_AUDIO",
+      "android.permission.READ_CONTACTS",
+      "android.permission.WRITE_CONTACTS",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_CALL_LOG",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.POST_NOTIFICATIONS"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://whatsapp.net",
+      "content://contacts",
+      "content://call_log",
+      "javax.crypto.Cipher",
+      "org.whispersystems.curve25519"
+    ],
+    "manifest": {
+      "exported_activities": 5,
+      "exported_services": 2,
+      "exported_receivers": 3,
+      "has_boot_receiver": true,
+      "has_sms_receiver": false,
+      "has_foreground_service": true,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 45
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 25.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_allowlist",
+    "release_year": 2023
+  },
+  {
+    "package_name": "com.ubercab",
+    "app_name": "Uber: Request a ride",
+    "is_system_app": false,
+    "is_sideloaded": false,
+    "target_sdk": 34,
+    "min_sdk": 24,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.ACCESS_BACKGROUND_LOCATION",
+      "android.permission.CAMERA",
+      "android.permission.READ_CONTACTS"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://uber.com",
+      "com.google.android.gms.location",
+      "okhttp3.OkHttpClient"
+    ],
+    "manifest": {
+      "exported_activities": 3,
+      "exported_services": 1,
+      "exported_receivers": 1,
+      "has_boot_receiver": false,
+      "has_sms_receiver": false,
+      "has_foreground_service": true,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 30
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 25.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_allowlist",
+    "release_year": 2023
+  },
+  {
+    "package_name": "com.enterprise.salescrm",
+    "app_name": "Velox Field CRM",
+    "is_system_app": false,
+    "is_sideloaded": true,
+    "target_sdk": 33,
+    "min_sdk": 26,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.CAMERA",
+      "android.permission.RECORD_AUDIO",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_CONTACTS",
+      "android.permission.WRITE_CONTACTS",
+      "android.permission.READ_CALL_LOG"
+    ],
+    "signature_permissions": [],
+    "dex_strings": [
+      "https://crm.veloxsolutions.com/api/v2",
+      "content://contacts",
+      "content://call_log",
+      "retrofit2.Retrofit",
+      "androidx.room.Room"
+    ],
+    "manifest": {
+      "exported_activities": 1,
+      "exported_services": 0,
+      "exported_receivers": 0,
+      "has_boot_receiver": false,
+      "has_sms_receiver": false,
+      "has_foreground_service": false,
+      "has_accessibility_service": false,
+      "has_device_admin": false,
+      "has_system_alert_window": false,
+      "has_launcher_activity": true,
+      "total_components": 8
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": true,
+      "is_known_publisher": false,
+      "validity_years": 25.0,
+      "is_generic_issuer": false,
+      "cert_count": 1
+    },
+    "label": 0,
+    "family": "benign_sideloaded_business",
+    "release_year": 2023
+  }
+]

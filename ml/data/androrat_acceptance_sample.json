@@ -1,0 +1,57 @@
+{
+  "package_name": "com.example.reverseshell2",
+  "app_name": "Google Service Framework",
+  "is_system_app": false,
+  "is_sideloaded": true,
+  "target_sdk": 22,
+  "min_sdk": 14,
+  "permissions": [
+    "android.permission.INTERNET",
+    "android.permission.READ_SMS",
+    "android.permission.RECEIVE_SMS",
+    "android.permission.SEND_SMS",
+    "android.permission.READ_CALL_LOG",
+    "android.permission.READ_CONTACTS",
+    "android.permission.ACCESS_FINE_LOCATION",
+    "android.permission.RECORD_AUDIO",
+    "android.permission.CAMERA",
+    "android.permission.READ_PHONE_STATE"
+  ],
+  "signature_permissions": [],
+  "dex_strings": [
+    "content://sms",
+    "content://call_log",
+    "java.lang.ProcessBuilder",
+    "java.net.Socket",
+    "/system/bin/sh",
+    "getDeviceId",
+    "getSubscriberId",
+    "192.168.1.105:4444",
+    "raw_c2_ip",
+    "hidden_camera_capture"
+  ],
+  "manifest": {
+    "exported_activities": 1,
+    "exported_services": 2,
+    "exported_receivers": 2,
+    "has_boot_receiver": true,
+    "has_sms_receiver": true,
+    "has_foreground_service": false,
+    "has_accessibility_service": false,
+    "has_device_admin": false,
+    "has_system_alert_window": false,
+    "has_launcher_activity": true,
+    "total_components": 5
+  },
+  "certificate": {
+    "is_debug_key": true,
+    "is_self_signed": true,
+    "is_known_publisher": false,
+    "validity_years": 30.0,
+    "is_generic_issuer": true,
+    "cert_count": 1
+  },
+  "label": 1,
+  "family": "rat_spyware",
+  "release_year": 2024
+}
