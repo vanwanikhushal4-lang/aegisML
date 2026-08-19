@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "model_target": "P5_Installed_App_Malware_Classification",
-  "num_features": 80,
+  "num_features": 88,
   "feature_families": {
     "permissions": {
       "start_index": 0,
@@ -520,6 +520,54 @@
       "name": "joint_stealth_spyware_signature",
       "type": "binary",
       "description": "SurveillancePerms & Sideloaded & (NoLauncher | BootReceiver) & DeviceIdHarvest"
+    },
+    {
+      "index": 80,
+      "name": "struct_zip_anti_analysis",
+      "type": "binary",
+      "description": "Anti-analysis zip tampering (fake encryption bit flag 0x0001 or size mismatch)"
+    },
+    {
+      "index": 81,
+      "name": "struct_asset_max_entropy",
+      "type": "continuous",
+      "description": "Maximum Shannon entropy across asset files (entropy / 8.0)"
+    },
+    {
+      "index": 82,
+      "name": "struct_has_encrypted_asset_blob",
+      "type": "binary",
+      "description": "High-entropy encrypted payload blob present in assets (>50KB, entropy > 7.80)"
+    },
+    {
+      "index": 83,
+      "name": "struct_thin_dex_stub",
+      "type": "binary",
+      "description": "Thin DEX loader stub (<40KB) paired with native .so unpacker"
+    },
+    {
+      "index": 84,
+      "name": "struct_has_native_lib",
+      "type": "binary",
+      "description": "Presence of native .so shared libraries in lib/ or assets/"
+    },
+    {
+      "index": 85,
+      "name": "struct_webview_phishing_density",
+      "type": "continuous",
+      "description": "Density of financial card/credential harvesting strings in HTML/JS assets (count / 20.0)"
+    },
+    {
+      "index": 86,
+      "name": "joint_packed_sms_stealer",
+      "type": "binary",
+      "description": "Encrypted asset blob + SMS interception permissions + sideloaded"
+    },
+    {
+      "index": 87,
+      "name": "joint_tampered_dropper",
+      "type": "binary",
+      "description": "Anti-analysis zip header + Thin DEX stub + dynamic load/install permissions"
     }
   ]
 }

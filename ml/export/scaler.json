@@ -1,7 +1,7 @@
 {
-  "num_features": 80,
+  "num_features": 88,
   "scaling_type": "min_max_normalization",
-  "description": "Deterministic scaling parameters and normalization denominators for AEGIS 80-feature vector",
+  "description": "Deterministic scaling parameters and normalization denominators for AEGIS 88-feature vector",
   "features": [
     {
       "index": 0,
@@ -717,6 +717,78 @@
     {
       "index": 79,
       "name": "joint_stealth_spyware_signature",
+      "category": "joint",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 80,
+      "name": "struct_zip_anti_analysis",
+      "category": "struct",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 81,
+      "name": "struct_asset_max_entropy",
+      "category": "struct",
+      "type": "continuous",
+      "scale_divisor": 8.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 82,
+      "name": "struct_has_encrypted_asset_blob",
+      "category": "struct",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 83,
+      "name": "struct_thin_dex_stub",
+      "category": "struct",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 84,
+      "name": "struct_has_native_lib",
+      "category": "struct",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 85,
+      "name": "struct_webview_phishing_density",
+      "category": "struct",
+      "type": "continuous",
+      "scale_divisor": 20.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 86,
+      "name": "joint_packed_sms_stealer",
+      "category": "joint",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 87,
+      "name": "joint_tampered_dropper",
       "category": "joint",
       "type": "binary",
       "scale_divisor": 1.0,

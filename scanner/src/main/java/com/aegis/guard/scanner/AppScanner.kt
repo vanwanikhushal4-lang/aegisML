@@ -31,6 +31,9 @@ class AppScanner @Inject constructor(
         malwareModel.loadModel(context)
     }
 
+    /**
+     * Scans all installed packages on device using the AEGIS 88-Feature On-Device ML Model.
+     */
     fun scanApps(): List<ScanResult> {
         val packageManager = context.packageManager
         val flags = PackageManager.GET_PERMISSIONS or
@@ -46,37 +49,21 @@ class AppScanner @Inject constructor(
             val isSystemApp = appInfo?.let { (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0 } ?: false
             val appName = appInfo?.loadLabel(packageManager)?.toString() ?: pkg.packageName
 
-            // 1. Forensic Structural Analysis (Anti-analysis zip, encrypted asset blobs, thin DEX loader)
-            val structuralRes = featureExtractor.analyzeStructuralPacker(appInfo?.sourceDir)
-
-            // 2. Extract 80-dimensional feature vector & ML inference
+            // Extract comprehensive 88-dimensional feature vector
             val features = featureExtractor.extractFeatures(context, pkg)
+
+            // Pure on-device ML inference (Evaluates tree ensemble over 88 features)
             val prediction = malwareModel.predict(features)
-
-            // 3. Multi-Layer Risk Fusion
-            val finalScore: Int
-            val finalThreatLevel: ThreatLevel
-            val finalReasons: List<String>
-
-            if (structuralRes.isPackedThreat) {
-                finalScore = Math.max(prediction.riskScore, structuralRes.structuralScore)
-                finalThreatLevel = ThreatLevel.DANGEROUS
-                finalReasons = structuralRes.reasons
-            } else {
-                finalScore = prediction.riskScore
-                finalThreatLevel = prediction.threatLevel
-                finalReasons = prediction.topReasons
-            }
 
             results.add(
                 ScanResult(
                     packageName = pkg.packageName,
                     appName = appName,
                     isSystemApp = isSystemApp,
-                    score = finalScore,
-                    threatLevel = finalThreatLevel,
+                    score = prediction.riskScore,
+                    threatLevel = prediction.threatLevel,
                     malwareProbability = prediction.probability,
-                    topReasons = finalReasons
+                    topReasons = prediction.topReasons
                 )
             )
         }
@@ -99,32 +86,17 @@ class AppScanner @Inject constructor(
             val isSystemApp = appInfo?.let { (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0 } ?: false
             val appName = appInfo?.loadLabel(packageManager)?.toString() ?: pkg.packageName
 
-            val structuralRes = featureExtractor.analyzeStructuralPacker(appInfo?.sourceDir)
             val features = featureExtractor.extractFeatures(context, pkg)
             val prediction = malwareModel.predict(features)
-
-            val finalScore: Int
-            val finalThreatLevel: ThreatLevel
-            val finalReasons: List<String>
-
-            if (structuralRes.isPackedThreat) {
-                finalScore = Math.max(prediction.riskScore, structuralRes.structuralScore)
-                finalThreatLevel = ThreatLevel.DANGEROUS
-                finalReasons = structuralRes.reasons
-            } else {
-                finalScore = prediction.riskScore
-                finalThreatLevel = prediction.threatLevel
-                finalReasons = prediction.topReasons
-            }
 
             ScanResult(
                 packageName = pkg.packageName,
                 appName = appName,
                 isSystemApp = isSystemApp,
-                score = finalScore,
-                threatLevel = finalThreatLevel,
+                score = prediction.riskScore,
+                threatLevel = prediction.threatLevel,
                 malwareProbability = prediction.probability,
-                topReasons = finalReasons
+                topReasons = prediction.topReasons
             )
         } catch (e: Exception) {
             null
