@@ -1,38 +1,38 @@
 {
   "Rule Engine (Current AEGIS Baseline)": {
-    "roc_auc": 0.918702848181741,
-    "pr_auc": 0.6171684820184429,
-    "brier_score": 0.06657758406881659,
-    "fpr_at_95_recall": 0.38120567375886527,
-    "operating_threshold": 0.149
+    "roc_auc": 0.6835573082062534,
+    "pr_auc": 0.22015090376788488,
+    "brier_score": 0.1074318183765077,
+    "fpr_at_95_recall": 0.9942401417811254,
+    "operating_threshold": 0.049
   },
   "Logistic Regression (L2)": {
-    "roc_auc": 0.9820222655477382,
-    "pr_auc": 0.9100147082687406,
-    "brier_score": 0.053000397980213165,
-    "fpr_at_95_recall": 0.10859929078014184,
-    "operating_threshold": 0.387
+    "roc_auc": 0.9519441066041548,
+    "pr_auc": 0.6940878404387127,
+    "brier_score": 0.07323427498340607,
+    "fpr_at_95_recall": 0.17190961453256534,
+    "operating_threshold": 0.231
   },
   "Random Forest": {
-    "roc_auc": 0.983453596959679,
-    "pr_auc": 0.9136884942564545,
-    "brier_score": 0.05704904525450304,
-    "fpr_at_95_recall": 0.09796099290780141,
-    "operating_threshold": 0.40700000000000003
+    "roc_auc": 0.9571514562044245,
+    "pr_auc": 0.7173517674673515,
+    "brier_score": 0.06632136924500097,
+    "fpr_at_95_recall": 0.15728843597696057,
+    "operating_threshold": 0.227
   },
   "Gradient Boosted Trees (Raw P5 Model)": {
-    "roc_auc": 0.9865590828176656,
-    "pr_auc": 0.9282648631426487,
-    "brier_score": 0.02345777421489218,
-    "fpr_at_95_recall": 0.07845744680851063,
-    "operating_threshold": 0.159
+    "roc_auc": 0.9591381924671718,
+    "pr_auc": 0.737241996054565,
+    "brier_score": 0.04311853738119525,
+    "fpr_at_95_recall": 0.1236154186973859,
+    "operating_threshold": 0.111
   },
   "Calibrated GBT (Sigmoid CV)": {
-    "roc_auc": 0.9868628323585092,
-    "pr_auc": 0.9285457601655478,
-    "brier_score": 0.023348948764202584,
-    "fpr_at_95_recall": 0.0797872340425532,
-    "operating_threshold": 0.159
+    "roc_auc": 0.9595415414107858,
+    "pr_auc": 0.7453433601357049,
+    "brier_score": 0.04247792983066351,
+    "fpr_at_95_recall": 0.128046078865751,
+    "operating_threshold": 0.115
   },
-  "allowlist_gate_passed": true
+  "allowlist_gate_passed": false
 }
