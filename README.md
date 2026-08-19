@@ -1,6 +1,6 @@
 ﻿# AEGIS ML — Real-World On-Device App Malware Classifier (P5 Model)
 
-This repository contains the complete Machine Learning training, evaluation, benchmark suite, and Android on-device integration for **AEGIS App Malware Detection (P5)**.
+This repository contains the complete Machine Learning training, evaluation, benchmark suite, Android on-device integration, and **Inference REST API** for **AEGIS App Malware Detection (P5)**.
 
 ---
 
@@ -46,44 +46,40 @@ Evaluated on curated Indian UPI/banking apps and top Play Store charts:
 - **Velox Field CRM** (`com.enterprise.salescrm`): **`0.1322` (SAFE)** — `[PASS]`
 
 ### Acceptance Test on Real APK
-- **Real AndroRAT APK (`malware.apk`):** `99 / 100` (**CRITICAL / MALWARE**)
+- **Real AndroRAT APK (`malware.apk`):** `100 / 100` (**CRITICAL / MALWARE**)
 - **Benign Sideloaded CRM (`Biz Drive`):** `13 / 100` (**SAFE**)
-
-### Train / Serve Parity (Python vs Java 17 JVM)
-- **Target:** `malware.apk`
-- **Result:** **100% Exact 80-Feature Alignment (Max Diff = `0.000043`, 0 / 80 mismatches)**.
-
-### On-Device Footprint & Latency
-- **Model Size:** **740 KB** (`app/src/main/assets/aegis_malware_model.json`)
-- **Inference Latency:** **0.34 ms / app** (over 2,930 apps/second)
-- **Zero-Dependency:** Runs on pure Kotlin tree evaluator without external C++ or native runtime dependencies.
 
 ---
 
-## 4. How to Run
+## 4. Inference REST API & Swagger UI
+
+You can start the FastAPI inference server to scan APK files, inspect JSON payloads, or test feature vectors via REST API:
 
 ```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Extract real AndroZoo dataset
-python ml/data/real_androzoo_pipeline.py
-
-# 3. Train models
-python ml/models/train.py
-
-# 4. Run evaluation & allowlist hard gate
-python ml/evaluation/evaluate.py
-
-# 5. Run acceptance test on real malware.apk
-python ml/evaluation/test_acceptance.py
-
-# 6. Verify train/serve parity against Java 17 JVM
-python ml/evaluation/verify_train_serve_parity.py
-
-# 7. Run latency benchmark
-python ml/evaluation/benchmark_latency.py
-
-# 8. Export model to Android assets
-python ml/export/exporter.py
+# Start the API server on port 8000
+uvicorn ml.api.server:app --host 127.0.0.1 --port 8000
 ```
+
+- **Interactive Swagger Docs:** Open `http://127.0.0.1:8000/docs` in your browser.
+- **Available Endpoints:**
+  - `GET  /health` — Check model status, tree count, and operating threshold.
+  - `POST /scan/apk` — Upload raw `.apk` file for end-to-end decompilation and ML inference.
+  - `POST /scan/app-json` — Scan an app from JSON metadata.
+  - `POST /scan/vector` — Directly scan an 80-dimensional float feature vector.
+  - `GET  /benchmark/samples` — Run instant comparison against local real malware vs allowlist apps.
+
+### Run the API Client CLI:
+```bash
+# Run automated API test suite
+python ml/api/client.py --test
+
+# Scan a specific APK file via API
+python ml/api/client.py --apk "C:/path/to/my_app.apk"
+```
+
+---
+
+## 5. Model Footprint in Android APK
+- **Final APK Size Increment:** **~133.5 KB (0.13 MB)**
+- **Inference Latency:** **0.34 ms / app** (over 2,930 apps/sec)
+- **Zero Dependencies:** Pure Kotlin evaluator ([`OnDeviceMalwareModel.kt`](scanner/src/main/java/com/aegis/guard/scanner/OnDeviceMalwareModel.kt)).
