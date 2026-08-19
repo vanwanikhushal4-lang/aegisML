@@ -1,0 +1,727 @@
+{
+  "num_features": 80,
+  "scaling_type": "min_max_normalization",
+  "description": "Deterministic scaling parameters and normalization denominators for AEGIS 80-feature vector",
+  "features": [
+    {
+      "index": 0,
+      "name": "perm_read_sms",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 1,
+      "name": "perm_receive_sms",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 2,
+      "name": "perm_send_sms",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 3,
+      "name": "perm_read_call_log",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 4,
+      "name": "perm_write_call_log",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 5,
+      "name": "perm_read_contacts",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 6,
+      "name": "perm_write_contacts",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 7,
+      "name": "perm_access_fine_location",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 8,
+      "name": "perm_access_coarse_location",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 9,
+      "name": "perm_record_audio",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 10,
+      "name": "perm_camera",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 11,
+      "name": "perm_system_alert_window",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 12,
+      "name": "perm_read_phone_state",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 13,
+      "name": "perm_process_outgoing_calls",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 14,
+      "name": "perm_bind_accessibility_service",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 15,
+      "name": "perm_bind_device_admin",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 16,
+      "name": "perm_request_install_packages",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 17,
+      "name": "perm_install_packages",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 18,
+      "name": "perm_query_all_packages",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 19,
+      "name": "perm_access_background_location",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 20,
+      "name": "perm_use_biometric",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 21,
+      "name": "perm_write_settings",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 22,
+      "name": "perm_get_accounts",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 23,
+      "name": "perm_combo_sms_full",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 24,
+      "name": "perm_combo_stealth_surveillance",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 25,
+      "name": "perm_combo_overlay_accessibility",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 26,
+      "name": "perm_combo_call_sms_harvest",
+      "category": "perm",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 27,
+      "name": "perm_dangerous_count",
+      "category": "perm",
+      "type": "float",
+      "scale_divisor": 20.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 28,
+      "name": "perm_total_count",
+      "category": "perm",
+      "type": "float",
+      "scale_divisor": 60.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 29,
+      "name": "perm_signature_count",
+      "category": "perm",
+      "type": "float",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 30,
+      "name": "dex_content_sms",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 31,
+      "name": "dex_content_call_log",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 32,
+      "name": "dex_content_contacts",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 33,
+      "name": "dex_sms_manager",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 34,
+      "name": "dex_process_builder",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 35,
+      "name": "dex_runtime_exec",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 36,
+      "name": "dex_dex_class_loader",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 37,
+      "name": "dex_reflection_invoke",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 38,
+      "name": "dex_socket_direct",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 39,
+      "name": "dex_device_id_harvest",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 40,
+      "name": "dex_shell_bin_sh",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 41,
+      "name": "dex_crypto_cipher",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 42,
+      "name": "dex_base64_payload",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 43,
+      "name": "dex_root_exploit_markers",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 44,
+      "name": "dex_raw_c2_ip",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 45,
+      "name": "dex_accessibility_dispatch",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 46,
+      "name": "dex_keylogger_markers",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 47,
+      "name": "dex_camera_surface_hidden",
+      "category": "dex",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 48,
+      "name": "dex_total_suspicious_patterns",
+      "category": "dex",
+      "type": "float",
+      "scale_divisor": 15.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 49,
+      "name": "manifest_exported_activities",
+      "category": "manifest",
+      "type": "float",
+      "scale_divisor": 20.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 50,
+      "name": "manifest_exported_services",
+      "category": "manifest",
+      "type": "float",
+      "scale_divisor": 10.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 51,
+      "name": "manifest_exported_receivers",
+      "category": "manifest",
+      "type": "float",
+      "scale_divisor": 10.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 52,
+      "name": "manifest_has_boot_receiver",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 53,
+      "name": "manifest_has_sms_receiver",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 54,
+      "name": "manifest_has_foreground_service",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 55,
+      "name": "manifest_has_accessibility_service",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 56,
+      "name": "manifest_has_device_admin",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 57,
+      "name": "manifest_has_system_alert_window",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 58,
+      "name": "manifest_has_launcher_activity",
+      "category": "manifest",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 59,
+      "name": "manifest_total_components",
+      "category": "manifest",
+      "type": "float",
+      "scale_divisor": 50.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 60,
+      "name": "manifest_ratio_exported",
+      "category": "manifest",
+      "type": "float",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 61,
+      "name": "cert_is_debug_key",
+      "category": "cert",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 62,
+      "name": "cert_is_self_signed",
+      "category": "cert",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 63,
+      "name": "cert_is_known_trusted_publisher",
+      "category": "cert",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 64,
+      "name": "cert_validity_years",
+      "category": "cert",
+      "type": "float",
+      "scale_divisor": 50.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 65,
+      "name": "cert_issuer_default_or_generic",
+      "category": "cert",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 66,
+      "name": "cert_count",
+      "category": "cert",
+      "type": "float",
+      "scale_divisor": 5.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 67,
+      "name": "meta_is_sideloaded",
+      "category": "meta",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 68,
+      "name": "meta_target_sdk_normalized",
+      "category": "meta",
+      "type": "float",
+      "scale_divisor": 35.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 69,
+      "name": "meta_target_sdk_le_22",
+      "category": "meta",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 70,
+      "name": "meta_target_sdk_le_28",
+      "category": "meta",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 71,
+      "name": "meta_min_sdk_normalized",
+      "category": "meta",
+      "type": "float",
+      "scale_divisor": 35.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 72,
+      "name": "meta_is_system_app",
+      "category": "meta",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 73,
+      "name": "meta_impersonation_score",
+      "category": "meta",
+      "type": "float",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 74,
+      "name": "meta_suspicious_package_name",
+      "category": "meta",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 75,
+      "name": "meta_package_segment_depth",
+      "category": "meta",
+      "type": "float",
+      "scale_divisor": 8.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 76,
+      "name": "joint_rat_signature",
+      "category": "joint",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 77,
+      "name": "joint_banking_trojan_signature",
+      "category": "joint",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 78,
+      "name": "joint_dropper_signature",
+      "category": "joint",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    },
+    {
+      "index": 79,
+      "name": "joint_stealth_spyware_signature",
+      "category": "joint",
+      "type": "binary",
+      "scale_divisor": 1.0,
+      "min_val": 0.0,
+      "max_val": 1.0
+    }
+  ]
+}
