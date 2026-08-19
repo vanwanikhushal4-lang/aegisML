@@ -1,62 +1,53 @@
-﻿import os
-import sys
+﻿import os, sys, json
 import numpy as np
 import joblib
 
-sys.path.insert(0, ".")
-from ml.features.extractor import extract_features_from_apk, explain_prediction, FEATURE_SPEC
-from androguard.core.apk import APK
+sys.path.insert(0, os.path.abspath("."))
+from ml.features.extractor import extract_features_from_apk, explain_prediction, analyze_apk_structural, FEATURE_SPEC
 
 apk_path = r"C:\Users\user\Downloads\60648a8e5ee28177de38e6ea40c17481b95a63e6aa4ca466754bc7e7f08bd2ab.apk"
 
-if not os.path.exists(apk_path):
-    print("Error: APK not found at", apk_path)
-    sys.exit(1)
+print("="*80)
+print("AEGIS COMPREHENSIVE APK ANALYSIS (ML + FORENSIC STRUCTURAL PACKER DETECTOR)")
+print("="*80)
 
-apk = APK(apk_path)
-print("="*80)
-print("ANALYZING APK:", os.path.basename(apk_path))
-print("="*80)
-print("Package Name:        ", apk.get_package())
-print("App Name:            ", apk.get_app_name())
-print("Target SDK:          ", apk.get_target_sdk_version())
-print("Min SDK:             ", apk.get_min_sdk_version())
-print("Declared Permissions:", len(apk.get_permissions()))
-for p in apk.get_permissions()[:10]:
-    print("  -", p)
-if len(apk.get_permissions()) > 10:
-    print(f"  ... and {len(apk.get_permissions()) - 10} more")
+# 1. Structural Forensic Analysis
+struct_res = analyze_apk_structural(apk_path)
+print(f"\n[1] Forensic Structural Analysis:")
+print(f"  * Anti-Analysis Zip Tampered:   {struct_res['zip_tampered']}")
+print(f"  * High-Entropy Encrypted Asset: {struct_res['has_encrypted_asset']}")
+print(f"  * Thin DEX + Native Loader:     {struct_res['thin_dex']}")
+print(f"  * WebView Financial Phishing:   {struct_res['has_webview_phishing']}")
+print(f"  * Structural Risk Score:        {struct_res['structural_score']}/100")
+
+# 2. On-Device ML Model Inference
+model = joblib.load("ml/models/saved_models/calibrated_gbt.joblib")
+importances = np.load("ml/models/saved_models/feature_importances.npy")
 
 vec = extract_features_from_apk(apk_path, is_sideloaded=True)
+ml_prob = float(model.predict_proba(vec.reshape(1, -1))[0, 1])
+ml_score = int(round(ml_prob * 100))
 
-models_dir = "ml/models/saved_models"
-calibrated_model = joblib.load(os.path.join(models_dir, "calibrated_gbt.joblib"))
-feature_importances = np.load(os.path.join(models_dir, "feature_importances.npy"))
-
-p_mal = float(calibrated_model.predict_proba(vec.reshape(1, -1))[0, 1])
-score = int(round(p_mal * 100))
-
-if p_mal < 0.16:
-    tier = "SAFE"
-elif p_mal < 0.40:
-    tier = "LOW"
-elif p_mal < 0.75:
-    tier = "MEDIUM"
-elif p_mal < 0.90:
-    tier = "HIGH"
+# 3. AEGIS Multi-Layer Risk Fusion
+# If structural packer or zip tampering detected, raise score to CRITICAL/HIGH
+if struct_res["is_packed_threat"]:
+    final_score = max(ml_score, struct_res["structural_score"])
+    threat_tier = "CRITICAL"
+    verdict = "MALWARE / PACKED TROJAN DETECTED"
+    top_reasons = struct_res["reasons"]
 else:
-    tier = "CRITICAL"
+    final_score = ml_score
+    threat_tier = "SAFE" if final_score < 16 else ("LOW" if final_score < 35 else "HIGH")
+    verdict = "SAFE / CLEAN" if threat_tier == "SAFE" else "SUSPICIOUS"
+    top_reasons = [desc for _, desc, _ in explain_prediction(vec, importances, top_k=3)]
 
-print("\n" + "="*80)
-print("AEGIS ON-DEVICE ML INFERENCE RESULT:")
+print(f"\n[2] AEGIS Multi-Layer Combined Scan Result:")
+print(f"  * Final Risk Score:      {final_score}/100")
+print(f"  * Threat Tier:           {threat_tier}")
+print(f"  * Verdict:               {verdict}")
+print(f"  * ML Model Probability:  {ml_prob:.4f}")
+
+print(f"\n[3] Primary Risk & Explanations:")
+for r in top_reasons:
+    print(f"  -> {r}")
 print("="*80)
-print(f"Risk Score:          {score}/100")
-print(f"Threat Tier:         {tier}")
-print(f"Malware Probability: {p_mal:.4f} (Operating Threshold: 0.1590)")
-verdict = "MALICIOUS / HIGH RISK" if p_mal >= 0.159 else "SAFE / CLEAN"
-print(f"Verdict:             {verdict}")
-
-reasons = explain_prediction(vec, feature_importances, top_k=5)
-print("\nTop Explainability Factors (Why this score was given):")
-for r_name, r_desc, r_contrib in reasons:
-    print(f"  -> [{r_name}] (Impact: {r_contrib:.3f}): {r_desc}")

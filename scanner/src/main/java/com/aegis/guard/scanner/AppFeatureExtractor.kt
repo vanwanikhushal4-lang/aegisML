@@ -9,6 +9,13 @@ import java.io.File
 import java.util.zip.ZipFile
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.log2
+
+data class StructuralAnalysisResult(
+    val isPackedThreat: Boolean,
+    val structuralScore: Int,
+    val reasons: List<String>
+)
 
 @Singleton
 class AppFeatureExtractor @Inject constructor() {
@@ -52,11 +59,11 @@ class AppFeatureExtractor @Inject constructor() {
         val IMPERSONATION_TARGETS = listOf(
             "google service", "google play", "system update", "google framework",
             "android system", "security plugin", "battery optimizer", "device manager",
-            "sbi yono", "hdfc bank", "phonepe", "paytm", "gpay", "whatsapp"
+            "sbi yono", "hdfc bank", "phonepe", "paytm", "gpay", "whatsapp", "divar", "telegram"
         )
 
         val SUSPICIOUS_PKG_TOKENS = listOf(
-            "com.example", "reverseshell", "payload", "rat", "bot", "hack", "dropper", "spy", "stealth"
+            "com.example", "reverseshell", "payload", "rat", "bot", "hack", "dropper", "spy", "stealth", "stealer"
         )
     }
 
@@ -133,10 +140,10 @@ class AppFeatureExtractor @Inject constructor() {
         checkDex(listOf("java.lang.reflect.Method.invoke", "Method.invoke"), 37)
         checkDex(listOf("java.net.Socket", "Socket(", "connectSocket"), 38)
         checkDex(listOf("getDeviceId", "getImei", "getSubscriberId", "getSimSerialNumber"), 39)
-        checkDex(listOf("/system/bin/sh", "chmod 777", "/system/xbin/su"), 40)
+        checkDex(listOf("/system/bin/sh", "chmod 777", "/system/xbin/su", "which su"), 40)
         checkDex(listOf("javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"), 41)
         checkDex(listOf("android.util.Base64.decode", "Base64.decode", "base64_payload", "Base64"), 42)
-        checkDex(listOf("/system/app/Superuser.apk", "which su", "test-keys", "busybox"), 43)
+        checkDex(listOf("/system/app/Superuser.apk", "test-keys", "busybox"), 43)
 
         val hasC2Ip = dexStrings.any { it.matches(Regex(".*\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,5}\\b.*")) }
         if (hasC2Ip) {
@@ -146,7 +153,7 @@ class AppFeatureExtractor @Inject constructor() {
 
         checkDex(listOf("AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"), 45)
         checkDex(listOf("AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger"), 46)
-        checkDex(listOf("SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null"), 47)
+        checkDex(listOf("SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"), 47)
 
         vec[48] = Math.min(dexSuspiciousCount.toFloat() / 15.0f, 1.0f)
 
@@ -172,7 +179,7 @@ class AppFeatureExtractor @Inject constructor() {
         // ─── Family 4: Certificate & Signing (61 - 66) ────────────────────────
         val isKnownPub = TRUSTED_PUBLISHERS.any { pkgName.startsWith(it) }
         vec[63] = if (isKnownPub) 1.0f else 0.0f
-        vec[64] = 0.5f // ~25 years default normalized
+        vec[64] = 0.5f
 
         // ─── Family 5: Provenance & Metadata (67 - 75) ────────────────────────
         val targetSdk = appInfo?.targetSdkVersion ?: 33
@@ -180,7 +187,7 @@ class AppFeatureExtractor @Inject constructor() {
 
         vec[67] = if (isSideloaded) 1.0f else 0.0f
         vec[68] = Math.min(targetSdk.toFloat() / 35.0f, 1.0f)
-        vec[69] = if (targetSdk <= 22) 1.0f else 0.0f // Critical legacy tell
+        vec[69] = if (targetSdk <= 22) 1.0f else 0.0f
         vec[70] = if (targetSdk <= 28) 1.0f else 0.0f
         vec[71] = Math.min(minSdk.toFloat() / 35.0f, 1.0f)
         vec[72] = if (isSystem) 1.0f else 0.0f
@@ -208,6 +215,106 @@ class AppFeatureExtractor @Inject constructor() {
         if (vec[24] == 1.0f && isSideloaded && hasSpyStealth && vec[39] == 1.0f) vec[79] = 1.0f
 
         return vec
+    }
+
+    /**
+     * Inspects the APK for structural packer patterns, encrypted asset payloads, and phishing templates.
+     */
+    fun analyzeStructuralPacker(apkPath: String?): StructuralAnalysisResult {
+        if (apkPath == null) return StructuralAnalysisResult(false, 0, emptyList())
+        val apkFile = File(apkPath)
+        if (!apkFile.exists()) return StructuralAnalysisResult(false, 0, emptyList())
+
+        var totalDexSize = 0L
+        var hasNativeLib = false
+        var hasEncryptedAsset = false
+        var hasWebviewPhishing = false
+        var encryptedAssetName = ""
+        var maxAssetEntropy = 0.0
+        val reasons = mutableListOf<String>()
+
+        try {
+            ZipFile(apkFile).use { zip ->
+                val entries = zip.entries()
+                while (entries.hasMoreElements()) {
+                    val entry = entries.nextElement()
+                    val name = entry.name
+
+                    if (name.endsWith(".dex")) {
+                        totalDexSize += entry.size
+                    } else if (name.endsWith(".so") || name.startsWith("lib/")) {
+                        hasNativeLib = true
+                    } else if (name.startsWith("assets/")) {
+                        if (entry.size > 50000) {
+                            zip.getInputStream(entry).use { stream ->
+                                val headerBytes = ByteArray(16)
+                                val readCount = stream.read(headerBytes)
+                                val magic = if (readCount > 0) String(headerBytes, 0, readCount, Charsets.ISO_8859_1) else ""
+                                
+                                val sampleBuffer = ByteArray(8192)
+                                val sampleRead = stream.read(sampleBuffer)
+                                val entropy = computeEntropy(sampleBuffer, sampleRead)
+                                if (entropy > maxAssetEntropy) maxAssetEntropy = entropy
+
+                                if (entropy > 7.80 || magic.startsWith("\u007fEPDATA") || magic.startsWith("dex\n")) {
+                                    hasEncryptedAsset = true
+                                    encryptedAssetName = name
+                                }
+                            }
+                        } else if (name.endsWith(".html") || name.endsWith(".js")) {
+                            zip.getInputStream(entry).use { stream ->
+                                val content = String(stream.readBytes(), Charsets.UTF_8).lowercase()
+                                val cardCount = content.split("card").size - 1
+                                if (cardCount >= 5) {
+                                    hasWebviewPhishing = true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Ignore extraction errors
+        }
+
+        var score = 0
+        val thinDex = totalDexSize in 1..40000 && hasNativeLib
+
+        if (hasEncryptedAsset) {
+            score += 45
+            reasons.add("High-Entropy Encrypted Asset Blob ($encryptedAssetName, entropy=${String.format("%.2f", maxAssetEntropy)})")
+        }
+        if (thinDex) {
+            score += 30
+            reasons.add("Thin DEX Loader Stub (${totalDexSize / 1024} KB) paired with Native .so Unpacker")
+        }
+        if (hasWebviewPhishing) {
+            score += 35
+            reasons.add("Local WebView Financial Phishing Form (assets/index.html card harvest)")
+        }
+
+        val finalScore = Math.min(score, 100)
+        return StructuralAnalysisResult(
+            isPackedThreat = finalScore >= 60,
+            structuralScore = finalScore,
+            reasons = reasons
+        )
+    }
+
+    private fun computeEntropy(data: ByteArray, length: Int): Double {
+        if (length <= 0) return 0.0
+        val freq = IntArray(256)
+        for (i in 0 until length) {
+            freq[data[i].toInt() and 0xFF]++
+        }
+        var entropy = 0.0
+        for (count in freq) {
+            if (count > 0) {
+                val p = count.toDouble() / length.toDouble()
+                entropy -= p * (log2(p))
+            }
+        }
+        return entropy
     }
 
     private fun scanDexStrings(apkPath: String?): Set<String> {
