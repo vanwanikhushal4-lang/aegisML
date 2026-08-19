@@ -1,38 +1,38 @@
 {
   "Rule Engine (Current AEGIS Baseline)": {
-    "roc_auc": 0.8519481784531463,
-    "pr_auc": 0.5876423859564786,
-    "brier_score": 0.10555443310335393,
-    "fpr_at_95_recall": 0.4689265536723164,
-    "operating_threshold": 0.259
+    "roc_auc": 0.918702848181741,
+    "pr_auc": 0.6171684820184429,
+    "brier_score": 0.06657758406881659,
+    "fpr_at_95_recall": 0.38120567375886527,
+    "operating_threshold": 0.149
   },
   "Logistic Regression (L2)": {
-    "roc_auc": 1.0,
-    "pr_auc": 1.0,
-    "brier_score": 0.0003041928284801543,
-    "fpr_at_95_recall": 0.0,
-    "operating_threshold": 0.913
+    "roc_auc": 0.9820222655477382,
+    "pr_auc": 0.9100147082687406,
+    "brier_score": 0.053000397980213165,
+    "fpr_at_95_recall": 0.10859929078014184,
+    "operating_threshold": 0.387
   },
   "Random Forest": {
-    "roc_auc": 1.0,
-    "pr_auc": 1.0,
-    "brier_score": 0.018292409758216496,
-    "fpr_at_95_recall": 0.0,
-    "operating_threshold": 0.419
+    "roc_auc": 0.983453596959679,
+    "pr_auc": 0.9136884942564545,
+    "brier_score": 0.05704904525450304,
+    "fpr_at_95_recall": 0.09796099290780141,
+    "operating_threshold": 0.40700000000000003
   },
   "Gradient Boosted Trees (Raw P5 Model)": {
-    "roc_auc": 0.999961036430937,
-    "pr_auc": 0.9997165712016405,
-    "brier_score": 0.06965526913782659,
-    "fpr_at_95_recall": 1.0,
-    "operating_threshold": 0.5
+    "roc_auc": 0.9865590828176656,
+    "pr_auc": 0.9282648631426487,
+    "brier_score": 0.02345777421489218,
+    "fpr_at_95_recall": 0.07845744680851063,
+    "operating_threshold": 0.159
   },
   "Calibrated GBT (Sigmoid CV)": {
-    "roc_auc": 0.999792194298331,
-    "pr_auc": 0.9984162644169345,
-    "brier_score": 0.06510899508842105,
-    "fpr_at_95_recall": 0.0018832391713747645,
-    "operating_threshold": 0.003
+    "roc_auc": 0.9868628323585092,
+    "pr_auc": 0.9285457601655478,
+    "brier_score": 0.023348948764202584,
+    "fpr_at_95_recall": 0.0797872340425532,
+    "operating_threshold": 0.159
   },
-  "allowlist_gate_passed": false
+  "allowlist_gate_passed": true
 }
