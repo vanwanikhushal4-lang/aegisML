@@ -45,9 +45,9 @@ def evaluate_models():
 
     results = {}
 
-    print("\n" + "-"*85)
-    print(f"{'Model':<45} | {'ROC-AUC':<8} | {'PR-AUC':<8} | {'Brier':<8} | {'FPR @ 98% Recall':<15}")
-    print("-"*85)
+    print("\n" + "-"*90)
+    print(f"{'Model':<45} | {'ROC-AUC':<8} | {'PR-AUC':<8} | {'Brier':<8} | {'FPR @ 95% Recall':<15}")
+    print("-"*90)
 
     operating_thresholds = {}
     for name, model in models.items():
@@ -57,34 +57,34 @@ def evaluate_models():
         pr_auc = average_precision_score(y_test, proba)
         brier = brier_score_loss(y_test, proba)
         
-        thresholds = np.linspace(0.01, 0.99, 100)
-        chosen_fpr = 1.0
-        chosen_thresh = 0.5
+        thresholds = np.linspace(0.001, 0.999, 500)
+        best_fpr = 1.0
+        best_thresh = 0.5
         for th in thresholds:
             preds = (proba >= th).astype(int)
             tn, fp, fn, tp = confusion_matrix(y_test, preds).ravel()
             recall = tp / (tp + fn) if (tp + fn) > 0 else 0
             fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
-            if recall >= 0.98:
-                chosen_fpr = fpr
-                chosen_thresh = th
+            if recall >= 0.95 and fpr <= best_fpr:
+                best_fpr = fpr
+                best_thresh = th
                 
-        operating_thresholds[name] = chosen_thresh
-        print(f"{name:<45} | {roc_auc:.4f}   | {pr_auc:.4f}   | {brier:.4f}  | {chosen_fpr*100:.2f}% (th={chosen_thresh:.2f})")
+        operating_thresholds[name] = best_thresh
+        print(f"{name:<45} | {roc_auc:.4f}   | {pr_auc:.4f}   | {brier:.4f}  | {best_fpr*100:.2f}% (th={best_thresh:.3f})")
         
         results[name] = {
             "roc_auc": float(roc_auc),
             "pr_auc": float(pr_auc),
             "brier_score": float(brier),
-            "fpr_at_98_recall": float(chosen_fpr),
-            "operating_threshold": float(chosen_thresh)
+            "fpr_at_95_recall": float(best_fpr),
+            "operating_threshold": float(best_thresh)
         }
 
-    # 3. Per-Family Recall Breakdown at Operating Threshold
+    # 3. Per-Family Recall Breakdown at Calibrated Operating Threshold
     chosen_model = calibrated_gbt
     chosen_th = operating_thresholds["Calibrated GBT (Sigmoid CV)"]
     print("\n" + "="*80)
-    print(f"PER-FAMILY RECALL BREAKDOWN (Calibrated GBT at Operating Threshold th={chosen_th:.2f})")
+    print(f"PER-FAMILY RECALL BREAKDOWN (Calibrated GBT at Operating Threshold th={chosen_th:.3f})")
     print("="*80)
     
     gbt_proba = chosen_model.predict_proba(X_test)[:, 1]

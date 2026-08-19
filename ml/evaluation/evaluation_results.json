@@ -1,38 +1,38 @@
 {
   "Rule Engine (Current AEGIS Baseline)": {
-    "roc_auc": 0.9686692061743694,
-    "pr_auc": 0.8067255665812769,
-    "brier_score": 0.04857804074720355,
-    "fpr_at_98_recall": 0.11771995043370508,
-    "operating_threshold": 0.2673737373737374
+    "roc_auc": 0.8519481784531463,
+    "pr_auc": 0.5876423859564786,
+    "brier_score": 0.10555443310335393,
+    "fpr_at_95_recall": 0.4689265536723164,
+    "operating_threshold": 0.259
   },
   "Logistic Regression (L2)": {
     "roc_auc": 1.0,
     "pr_auc": 1.0,
-    "brier_score": 6.687923450954258e-05,
-    "fpr_at_98_recall": 0.0,
-    "operating_threshold": 0.9207070707070707
+    "brier_score": 0.0003041928284801543,
+    "fpr_at_95_recall": 0.0,
+    "operating_threshold": 0.913
   },
   "Random Forest": {
     "roc_auc": 1.0,
     "pr_auc": 1.0,
-    "brier_score": 0.008553541351536721,
-    "fpr_at_98_recall": 0.0,
-    "operating_threshold": 0.5643434343434344
+    "brier_score": 0.018292409758216496,
+    "fpr_at_95_recall": 0.0,
+    "operating_threshold": 0.419
   },
   "Gradient Boosted Trees (Raw P5 Model)": {
-    "roc_auc": 1.0,
-    "pr_auc": 1.0,
-    "brier_score": 0.04462490610053798,
-    "fpr_at_98_recall": 0.0,
-    "operating_threshold": 0.049595959595959596
+    "roc_auc": 0.999961036430937,
+    "pr_auc": 0.9997165712016405,
+    "brier_score": 0.06965526913782659,
+    "fpr_at_95_recall": 1.0,
+    "operating_threshold": 0.5
   },
   "Calibrated GBT (Sigmoid CV)": {
-    "roc_auc": 1.0,
-    "pr_auc": 1.0000000000000002,
-    "brier_score": 0.039135556439717965,
-    "fpr_at_98_recall": 0.0,
-    "operating_threshold": 0.11888888888888888
+    "roc_auc": 0.999792194298331,
+    "pr_auc": 0.9984162644169345,
+    "brier_score": 0.06510899508842105,
+    "fpr_at_95_recall": 0.0018832391713747645,
+    "operating_threshold": 0.003
   },
-  "allowlist_gate_passed": true
+  "allowlist_gate_passed": false
 }

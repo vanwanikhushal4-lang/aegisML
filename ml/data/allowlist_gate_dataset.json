@@ -9,12 +9,10 @@
     "permissions": [
       "android.permission.INTERNET",
       "android.permission.ACCESS_FINE_LOCATION",
-      "android.permission.ACCESS_COARSE_LOCATION",
       "android.permission.READ_PHONE_STATE",
       "android.permission.CAMERA",
       "android.permission.USE_BIOMETRIC",
-      "android.permission.READ_CONTACTS",
-      "android.permission.POST_NOTIFICATIONS"
+      "android.permission.READ_CONTACTS"
     ],
     "signature_permissions": [],
     "dex_strings": [
@@ -22,7 +20,8 @@
       "javax.crypto.Cipher",
       "androidx.biometric.BiometricPrompt",
       "okhttp3.OkHttpClient",
-      "content://contacts"
+      "content://contacts",
+      "java.net.Socket"
     ],
     "manifest": {
       "exported_activities": 2,
@@ -51,7 +50,7 @@
   },
   {
     "package_name": "com.phonepe.app",
-    "app_name": "PhonePe: Secure Payments",
+    "app_name": "PhonePe",
     "is_system_app": false,
     "is_sideloaded": false,
     "target_sdk": 34,
@@ -72,7 +71,9 @@
       "android.telephony.SmsManager",
       "content://sms",
       "androidx.camera.view.PreviewView",
-      "javax.crypto.Cipher"
+      "javax.crypto.Cipher",
+      "Base64",
+      "java.net.Socket"
     ],
     "manifest": {
       "exported_activities": 3,
@@ -101,7 +102,7 @@
   },
   {
     "package_name": "net.one97.paytm",
-    "app_name": "Paytm: Secure UPI Payments",
+    "app_name": "Paytm",
     "is_system_app": false,
     "is_sideloaded": false,
     "target_sdk": 34,
@@ -121,7 +122,8 @@
       "https://paytm.com",
       "android.telephony.SmsManager",
       "content://sms",
-      "androidx.security.crypto.EncryptedSharedPreferences"
+      "javax.crypto.Cipher",
+      "Base64.decode"
     ],
     "manifest": {
       "exported_activities": 4,
@@ -150,7 +152,7 @@
   },
   {
     "package_name": "com.google.android.apps.nbu.paisa.user",
-    "app_name": "Google Pay: Save and Pay",
+    "app_name": "Google Pay",
     "is_system_app": false,
     "is_sideloaded": false,
     "target_sdk": 34,
@@ -167,7 +169,8 @@
     "dex_strings": [
       "https://pay.google.com",
       "com.google.android.gms",
-      "javax.crypto.Cipher"
+      "javax.crypto.Cipher",
+      "Socket("
     ],
     "manifest": {
       "exported_activities": 2,
@@ -196,7 +199,7 @@
   },
   {
     "package_name": "com.whatsapp",
-    "app_name": "WhatsApp Messenger",
+    "app_name": "WhatsApp",
     "is_system_app": false,
     "is_sideloaded": false,
     "target_sdk": 34,
@@ -209,8 +212,7 @@
       "android.permission.WRITE_CONTACTS",
       "android.permission.ACCESS_FINE_LOCATION",
       "android.permission.READ_CALL_LOG",
-      "android.permission.READ_PHONE_STATE",
-      "android.permission.POST_NOTIFICATIONS"
+      "android.permission.READ_PHONE_STATE"
     ],
     "signature_permissions": [],
     "dex_strings": [
@@ -218,7 +220,8 @@
       "content://contacts",
       "content://call_log",
       "javax.crypto.Cipher",
-      "org.whispersystems.curve25519"
+      "java.net.Socket",
+      "Base64.decode"
     ],
     "manifest": {
       "exported_activities": 5,
@@ -246,54 +249,8 @@
     "release_year": 2023
   },
   {
-    "package_name": "com.ubercab",
-    "app_name": "Uber: Request a ride",
-    "is_system_app": false,
-    "is_sideloaded": false,
-    "target_sdk": 34,
-    "min_sdk": 24,
-    "permissions": [
-      "android.permission.INTERNET",
-      "android.permission.ACCESS_FINE_LOCATION",
-      "android.permission.ACCESS_COARSE_LOCATION",
-      "android.permission.ACCESS_BACKGROUND_LOCATION",
-      "android.permission.CAMERA",
-      "android.permission.READ_CONTACTS"
-    ],
-    "signature_permissions": [],
-    "dex_strings": [
-      "https://uber.com",
-      "com.google.android.gms.location",
-      "okhttp3.OkHttpClient"
-    ],
-    "manifest": {
-      "exported_activities": 3,
-      "exported_services": 1,
-      "exported_receivers": 1,
-      "has_boot_receiver": false,
-      "has_sms_receiver": false,
-      "has_foreground_service": true,
-      "has_accessibility_service": false,
-      "has_device_admin": false,
-      "has_system_alert_window": false,
-      "has_launcher_activity": true,
-      "total_components": 30
-    },
-    "certificate": {
-      "is_debug_key": false,
-      "is_self_signed": false,
-      "is_known_publisher": true,
-      "validity_years": 25.0,
-      "is_generic_issuer": false,
-      "cert_count": 1
-    },
-    "label": 0,
-    "family": "benign_allowlist",
-    "release_year": 2023
-  },
-  {
     "package_name": "com.enterprise.salescrm",
-    "app_name": "Velox Field CRM",
+    "app_name": "Biz Drive CRM",
     "is_system_app": false,
     "is_sideloaded": true,
     "target_sdk": 33,
@@ -309,11 +266,15 @@
     ],
     "signature_permissions": [],
     "dex_strings": [
-      "https://crm.veloxsolutions.com/api/v2",
+      "https://crm.bizdrive.com/api",
       "content://contacts",
       "content://call_log",
+      "AccessibilityNodeInfo",
       "retrofit2.Retrofit",
-      "androidx.room.Room"
+      "java.net.Socket",
+      "Base64.decode",
+      "DexClassLoader",
+      "java.lang.reflect.Method.invoke"
     ],
     "manifest": {
       "exported_activities": 1,
@@ -326,7 +287,7 @@
       "has_device_admin": false,
       "has_system_alert_window": false,
       "has_launcher_activity": true,
-      "total_components": 8
+      "total_components": 12
     },
     "certificate": {
       "is_debug_key": false,

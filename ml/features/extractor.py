@@ -1,13 +1,23 @@
 ﻿"""
 AEGIS Static APK Feature Extractor
 Extracts an 80-dimensional normalized feature vector matching feature_spec.json
+Supports extracting directly from raw APK files (via androguard) or dictionary metadata.
 """
 
 import json
 import os
 import re
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Set, Optional
 import numpy as np
+
+# Silence androguard logging
+try:
+    from loguru import logger
+    import sys
+    logger.remove()
+    logger.add(sys.stderr, level="ERROR")
+except Exception:
+    pass
 
 SPEC_PATH = os.path.join(os.path.dirname(__file__), "feature_spec.json")
 with open(SPEC_PATH, "r", encoding="utf-8-sig") as f:
@@ -67,7 +77,9 @@ SUSPICIOUS_PACKAGE_TOKENS = [
     "com.example", "reverseshell", "payload", "rat", "bot", "hack", "dropper", "spy", "stealth"
 ]
 
+
 def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
+    """Extracts 80-feature vector from dictionary metadata."""
     vec = np.zeros(NUM_FEATURES, dtype=np.float32)
     
     perms = set(app.get("permissions", []))
@@ -76,10 +88,10 @@ def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
     manifest = app.get("manifest", {})
     cert = app.get("certificate", {})
     
-    package_name = app.get("package_name", "").lower()
-    app_name = app.get("app_name", "").lower()
-    target_sdk = int(app.get("target_sdk", 33))
-    min_sdk = int(app.get("min_sdk", 21))
+    package_name = str(app.get("package_name", "")).lower()
+    app_name = str(app.get("app_name", "")).lower()
+    target_sdk = int(app.get("target_sdk", 33) or 33)
+    min_sdk = int(app.get("min_sdk", 21) or 21)
     is_sideloaded = 1.0 if app.get("is_sideloaded", True) else 0.0
     is_system = 1.0 if app.get("is_system_app", False) else 0.0
 
@@ -119,7 +131,7 @@ def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
         return False
 
     check_dex(["content://sms", "content://telephony/sms"], 30)
-    check_dex(["content://call_log", "content://call_log/calls"], 31)
+    check_dex(["content://call_log"], 31)
     check_dex(["content://contacts", "content://com.android.contacts"], 32)
     check_dex(["android.telephony.SmsManager", "sendTextMessage", "sendMultipartTextMessage"], 33)
     check_dex(["java.lang.ProcessBuilder", "ProcessBuilder"], 34)
@@ -130,7 +142,7 @@ def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
     check_dex(["getDeviceId", "getImei", "getSubscriberId", "getSimSerialNumber", "getMacAddress"], 39)
     check_dex(["/system/bin/sh", "su", "chmod 777", "/system/xbin/su"], 40)
     check_dex(["javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"], 41)
-    check_dex(["android.util.Base64.decode", "Base64.decode", "base64_payload"], 42)
+    check_dex(["android.util.Base64.decode", "Base64.decode", "base64_payload", "Base64"], 42)
     check_dex(["/system/app/Superuser.apk", "which su", "test-keys", "busybox"], 43)
     
     has_raw_ip = any(re.search(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,5}\b", s) for s in dex)
@@ -138,7 +150,7 @@ def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
         vec[44] = 1.0
         dex_suspicious_count += 1
         
-    check_dex(["AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture"], 45)
+    check_dex(["AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"], 45)
     check_dex(["AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger"], 46)
     check_dex(["SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null"], 47)
     
@@ -212,6 +224,128 @@ def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
     vec[79] = 1.0 if (vec[24] == 1.0 and is_sideloaded and has_spy_stealth and vec[39] == 1.0) else 0.0
 
     return vec
+
+
+def extract_features_from_apk(apk_path: str, is_sideloaded: bool = True) -> np.ndarray:
+    """
+    Parses a real APK file using Androguard and extracts the exact 80-feature vector.
+    """
+    from androguard.core.apk import APK
+    from androguard.core.dex import DEX
+
+    apk = APK(apk_path)
+    
+    pkg_name = apk.get_package() or ""
+    app_name = apk.get_app_name() or pkg_name
+    
+    target_sdk = 33
+    try:
+        ts = apk.get_target_sdk_version()
+        if ts is not None:
+            target_sdk = int(ts)
+    except Exception:
+        pass
+
+    min_sdk = 21
+    try:
+        ms = apk.get_min_sdk_version()
+        if ms is not None:
+            min_sdk = int(ms)
+    except Exception:
+        pass
+
+    perms = apk.get_permissions() or []
+    declared_perms = apk.get_declared_permissions() or []
+    
+    activities = apk.get_activities() or []
+    services = apk.get_services() or []
+    receivers = apk.get_receivers() or []
+    providers = apk.get_providers() or []
+
+    # Check manifest intent filters & special declarations
+    has_boot = False
+    has_sms_rec = False
+    has_access_srv = False
+    has_device_admin = False
+    
+    for r in receivers:
+        filters = apk.get_intent_filters("receiver", r) or {}
+        actions = filters.get("action", [])
+        if any("BOOT_COMPLETED" in a for a in actions):
+            has_boot = True
+        if any("SMS_RECEIVED" in a or "SMS_DELIVER" in a for a in actions):
+            has_sms_rec = True
+            
+    for s in services:
+        filters = apk.get_intent_filters("service", s) or {}
+        actions = filters.get("action", [])
+        if any("AccessibilityService" in a for a in actions):
+            has_access_srv = True
+
+    # Scan DEX strings across all DEX files in the APK
+    dex_strings = set()
+    try:
+        for dex_bytes in apk.get_all_dex():
+            d = DEX(dex_bytes)
+            for s in d.get_strings():
+                dex_strings.add(s)
+    except Exception:
+        pass
+
+    # Extract certificate info
+    is_debug = False
+    is_self_signed = False
+    validity_years = 25.0
+    is_generic_issuer = False
+    certs = []
+    try:
+        certs = apk.get_certificates() or []
+        for cert in certs:
+            issuer = cert.issuer.human_friendly.lower()
+            subject = cert.subject.human_friendly.lower()
+            if "android debug" in issuer or "androiddebug" in issuer or "android" in issuer:
+                is_debug = True
+                is_generic_issuer = True
+            if issuer == subject:
+                is_self_signed = True
+    except Exception:
+        pass
+
+    app_dict = {
+        "package_name": pkg_name,
+        "app_name": app_name,
+        "is_system_app": False,
+        "is_sideloaded": is_sideloaded,
+        "target_sdk": target_sdk,
+        "min_sdk": min_sdk,
+        "permissions": perms,
+        "signature_permissions": declared_perms,
+        "dex_strings": list(dex_strings),
+        "manifest": {
+            "exported_activities": len(activities),
+            "exported_services": len(services),
+            "exported_receivers": len(receivers),
+            "has_boot_receiver": has_boot or ("android.permission.RECEIVE_BOOT_COMPLETED" in perms),
+            "has_sms_receiver": has_sms_rec or ("android.permission.RECEIVE_SMS" in perms),
+            "has_foreground_service": "android.permission.FOREGROUND_SERVICE" in perms,
+            "has_accessibility_service": has_access_srv or ("android.permission.BIND_ACCESSIBILITY_SERVICE" in perms),
+            "has_device_admin": has_device_admin or ("android.permission.BIND_DEVICE_ADMIN" in perms),
+            "has_system_alert_window": "android.permission.SYSTEM_ALERT_WINDOW" in perms,
+            "has_launcher_activity": len(activities) > 0,
+            "total_components": len(activities) + len(services) + len(receivers) + len(providers)
+        },
+        "certificate": {
+            "is_debug_key": is_debug,
+            "is_self_signed": is_self_signed,
+            "is_known_publisher": any(pkg_name.lower().startswith(p) for p in TRUSTED_PUBLISHERS),
+            "validity_years": validity_years,
+            "is_generic_issuer": is_generic_issuer,
+            "cert_count": len(certs) if certs else 1
+        }
+    }
+
+    return extract_features_from_dict(app_dict)
+
 
 def explain_prediction(feature_vector: np.ndarray, feature_importances: np.ndarray = None, top_k: int = 3) -> List[Tuple[str, str, float]]:
     reasons = []

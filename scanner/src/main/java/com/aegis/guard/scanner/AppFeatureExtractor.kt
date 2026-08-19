@@ -126,17 +126,17 @@ class AppFeatureExtractor @Inject constructor() {
         checkDex(listOf("content://sms", "content://telephony/sms"), 30)
         checkDex(listOf("content://call_log"), 31)
         checkDex(listOf("content://contacts", "content://com.android.contacts"), 32)
-        checkDex(listOf("android.telephony.SmsManager", "sendTextMessage"), 33)
+        checkDex(listOf("android.telephony.SmsManager", "sendTextMessage", "SmsManager"), 33)
         checkDex(listOf("java.lang.ProcessBuilder", "ProcessBuilder"), 34)
         checkDex(listOf("Runtime.getRuntime().exec", "Runtime.exec", "/system/bin/sh"), 35)
-        checkDex(listOf("dalvik.system.DexClassLoader", "DexClassLoader"), 36)
+        checkDex(listOf("dalvik.system.DexClassLoader", "DexClassLoader", "InMemoryDexClassLoader"), 36)
         checkDex(listOf("java.lang.reflect.Method.invoke", "Method.invoke"), 37)
-        checkDex(listOf("java.net.Socket", "Socket("), 38)
-        checkDex(listOf("getDeviceId", "getImei", "getSubscriberId"), 39)
-        checkDex(listOf("/system/bin/sh", "su", "chmod 777"), 40)
-        checkDex(listOf("javax.crypto.Cipher", "DESede"), 41)
-        checkDex(listOf("android.util.Base64.decode", "Base64.decode"), 42)
-        checkDex(listOf("/system/app/Superuser.apk", "which su", "test-keys"), 43)
+        checkDex(listOf("java.net.Socket", "Socket(", "connectSocket"), 38)
+        checkDex(listOf("getDeviceId", "getImei", "getSubscriberId", "getSimSerialNumber"), 39)
+        checkDex(listOf("/system/bin/sh", "chmod 777", "/system/xbin/su"), 40)
+        checkDex(listOf("javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"), 41)
+        checkDex(listOf("android.util.Base64.decode", "Base64.decode", "base64_payload", "Base64"), 42)
+        checkDex(listOf("/system/app/Superuser.apk", "which su", "test-keys", "busybox"), 43)
 
         val hasC2Ip = dexStrings.any { it.matches(Regex(".*\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,5}\\b.*")) }
         if (hasC2Ip) {
@@ -144,9 +144,9 @@ class AppFeatureExtractor @Inject constructor() {
             dexSuspiciousCount++
         }
 
-        checkDex(listOf("AccessibilityNodeInfo.performAction", "ACTION_CLICK"), 45)
-        checkDex(listOf("AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener"), 46)
-        checkDex(listOf("hidden_camera_capture", "camera_surface_null"), 47)
+        checkDex(listOf("AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"), 45)
+        checkDex(listOf("AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger"), 46)
+        checkDex(listOf("SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null"), 47)
 
         vec[48] = Math.min(dexSuspiciousCount.toFloat() / 15.0f, 1.0f)
 
@@ -165,7 +165,7 @@ class AppFeatureExtractor @Inject constructor() {
         vec[55] = if (vec[14] == 1.0f) 1.0f else 0.0f
         vec[56] = if (vec[15] == 1.0f) 1.0f else 0.0f
         vec[57] = vec[11]
-        vec[58] = 1.0f // Standard launcher presence
+        vec[58] = 1.0f
         vec[59] = Math.min(totComp.toFloat() / 50.0f, 1.0f)
         vec[60] = if (totComp > 0) (actCount + srvCount + recCount).toFloat() / totComp.toFloat() else 0.0f
 
@@ -180,12 +180,11 @@ class AppFeatureExtractor @Inject constructor() {
 
         vec[67] = if (isSideloaded) 1.0f else 0.0f
         vec[68] = Math.min(targetSdk.toFloat() / 35.0f, 1.0f)
-        vec[69] = if (targetSdk <= 22) 1.0f else 0.0f // Critical RAT tell
+        vec[69] = if (targetSdk <= 22) 1.0f else 0.0f // Critical legacy tell
         vec[70] = if (targetSdk <= 28) 1.0f else 0.0f
         vec[71] = Math.min(minSdk.toFloat() / 35.0f, 1.0f)
         vec[72] = if (isSystem) 1.0f else 0.0f
 
-        // Impersonation detection
         val impersonates = IMPERSONATION_TARGETS.any { appLabel.contains(it) } && !isSystem && !isKnownPub
         vec[73] = if (impersonates) 1.0f else 0.0f
 
@@ -225,7 +224,7 @@ class AppFeatureExtractor @Inject constructor() {
                         zip.getInputStream(entry).use { stream ->
                             val bytes = stream.readBytes()
                             val content = String(bytes, Charsets.ISO_8859_1)
-                            for (target in listOf("content://sms", "content://call_log", "content://contacts", "ProcessBuilder", "Runtime.exec", "Socket", "getDeviceId", "su", "/system/bin/sh", "DexClassLoader", "Base64", "AccessibilityNodeInfo")) {
+                            for (target in listOf("content://sms", "content://telephony/sms", "content://call_log", "content://contacts", "ProcessBuilder", "Runtime.exec", "/system/bin/sh", "DexClassLoader", "Base64", "AccessibilityNodeInfo", "OnKeyListener", "getDeviceId", "getSubscriberId", "which su")) {
                                 if (content.contains(target)) {
                                     strings.add(target)
                                 }
