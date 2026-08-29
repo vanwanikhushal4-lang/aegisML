@@ -42,13 +42,36 @@ object KotlinExtractorRunner {
         "android.permission.GET_ACCOUNTS" to 22
     )
 
-    val TRUSTED_CERT_SUBJECTS = listOf(
-        "samsung electronics", "samsung knox", "samsung", "google inc", "google llc", "android",
-        "whatsapp", "microsoft", "mozilla", "oneplus", "oppo", "coloros", "realme",
-        "xiaomi", "miui", "hyperos", "huawei", "honor", "harmonyos", "emui",
-        "vivo", "iqoo", "funtouchos", "originos", "motorola", "lenovo",
-        "transsion", "infinix", "tecno", "asus", "nothing technology",
-        "national payments corporation", "state bank of india", "icici bank", "hdfc bank", "paytm", "phonepe"
+    val TRUSTED_CERT_SHA256_SET = setOf(
+        // Google LLC Platform & App Keys
+        "3184771213aaa571eb74bc34f461cf694aa552a0d05a166053661fe334dc2f3a",
+        "38918a453d07199354f8b19af05ec6562ced5788d60a8c38548b5dbf6670a3b4",
+        "f0fd6c5ec410f2157d093b8099e04b609e2cb4ef60e445d4e83f16334f5d82dc",
+        // Samsung Electronics / Knox One UI Keys
+        "9b9ebef87d4c7dcc740812f280e026df5db094f510d2af443cb42789030e30c9",
+        "ae3bf39f22975896a3ddcc7f4084af538a48026c6cfdc4b62cf8a4778f424e99",
+        "58e3e81e0e7e29401e18d102d3f03e1826b4f44060f687e844243c4e09ec1638",
+        // Xiaomi / MIUI / HyperOS Platform Keys
+        "f9e21ac0410b6d48162ba288e1a7086f2b819b6289489a39e809cdc534d89332",
+        "1bd4f1422fde8b0c3b877e99ffe0ed5b8944c5c8563ba1eaaf506d59d577798b",
+        "287e07662c1d06371cf792518e1b6f005c331a9c3756dfc1e55099351e06c7e2",
+        // OnePlus (OxygenOS) Platform Keys
+        "eb485a89673ba2cd621dc52ae3d2726af4370e42bf9f24b0b5158f75a328e24f",
+        "6465dc41094038a8e1039989f6645367b140669b33a5796a84d4361546944e89",
+        // OPPO / Realme (ColorOS / Realme UI) Platform Keys
+        "0da273d28326a60aaabe1c53fa2bc1d700e01f1795e49317657972db72f65212",
+        "c06d3f3371f8b17b498ec05ba7155726ba1db15ba699451344d163e4d2bc1347",
+        "e43a71a5092101f6a161af1630bb7ff1ddde3a7633e21d6006466ebd413b2b4e",
+        // Huawei / Honor (HarmonyOS / EMUI) Platform Keys
+        "dd5a2a9b7c7b9e4c447b2d6ac2ccf2900b86d32e15ddb0c742d2be8ccc351518",
+        "bf17d057a70a8d46a6f6df600e0544425aa1453270424d31f602d693213e42fd",
+        // Vivo / iQOO (FuntouchOS / OriginOS) Platform Keys
+        "832aae9a7368771d4d2ee93fd572be681a2d12e3d4b358b1c65053290d50b560",
+        "1954a9307d2199c05e22036400c3cd9e80e2995b93fe6d309ee1d6150994fb63",
+        // Indian Banking / UPI / NPCI
+        "102d059606fc9859dbc7029e95914132f248f4952c1d48ca3dc7bee65d7db606",
+        "d2bbe55f4b3aa28780d761a144ab4b29e8e41c8fb47d4d44500c2688b6d49092",
+        "c4436573c52e8964e52627048a1c97a80b7204eb0a696328fb68ef21199a0994"
     )
 
     data class ZipItem(val name: String, val data: ByteArray, val isEncryptedFlag: Boolean)
@@ -459,6 +482,7 @@ object KotlinExtractorRunner {
                         val cf = java.security.cert.CertificateFactory.getInstance("X.509")
                         val certList = cf.generateCertificates(java.io.ByteArrayInputStream(item.data))
                         certCount += certList.size
+                        val md = java.security.MessageDigest.getInstance("SHA-256")
                         for (c in certList) {
                             val xc = c as? java.security.cert.X509Certificate ?: continue
                             val subj = xc.subjectDN.name.lowercase()
@@ -466,11 +490,9 @@ object KotlinExtractorRunner {
                             if (subj.contains("debug") || issuer.contains("debug") || subj.contains("test-keys") || subj.contains("testkey")) {
                                 isDebug = true
                             } else if (!isDebug) {
-                                for (trusted in TRUSTED_CERT_SUBJECTS) {
-                                    if (subj.contains(trusted) || issuer.contains(trusted)) {
-                                        isKnownPub = true
-                                        break
-                                    }
+                                val sha256 = md.digest(xc.encoded).joinToString("") { "%02x".format(it) }.lowercase()
+                                if (sha256 in TRUSTED_CERT_SHA256_SET) {
+                                    isKnownPub = true
                                 }
                             }
                         }

@@ -1,20 +1,15 @@
 package com.aegis.guard.scanner
-
+ 
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-
-enum class ThreatLevel {
-    SAFE, SUSPICIOUS, DANGEROUS, UNKNOWN
-}
-
+ 
 enum class ScanStatus {
     SUCCESS, FAILED
 }
-
+ 
 data class ScanResult(
     val packageName: String,
     val appName: String,
@@ -26,12 +21,12 @@ data class ScanResult(
     val status: ScanStatus = ScanStatus.SUCCESS,
     val errorMessage: String? = null
 )
-
+ 
 @Singleton
 class AppScanner @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val featureExtractor: AppFeatureExtractor,
-    private val malwareModel: OnDeviceMalwareModel
+    private val context: Context,
+    private val featureExtractor: AppFeatureExtractor = AppFeatureExtractor(),
+    private val malwareModel: OnDeviceMalwareModel = OnDeviceMalwareModel()
 ) {
     init {
         try {

@@ -2,7 +2,8 @@
 AEGIS Hardened On-Device Malware Model (P5 v2) — Evaluation & Regression Benchmark Suite
 CI Requirement: Enforces strict non-zero exit code (1) on any failure:
 - Any feature mismatch or train/test leakage
-- Any false positive on Samsung OEM or Banking suites (> 0.00%)
+- Any false positive on physical OEM or Banking suites (> 0.00%)
+- Any counterfactual instability (downgrading targetSdk or unresolved provenance converting OEM apps to malware)
 - Any held-out malware recall below 95%
 - Any Android Kotlin model-load test failure
 """
@@ -13,12 +14,13 @@ import json
 import math
 import hashlib
 import subprocess
-from typing import Tuple, List, Dict, Set
+from typing import Tuple, List, Dict, Set, Any
 import numpy as np
 import joblib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from ml.features.extractor import extract_features_from_dict, extract_features_from_apk, FEATURE_SPEC
+from ml.data.real_dataset_loader import PHYSICAL_OEM_REGISTRY, FIXTURES_DIR
 
 EVAL_DIR = os.path.dirname(__file__)
 PROJECT_DIR = os.path.abspath(os.path.join(EVAL_DIR, "../.."))
@@ -41,9 +43,17 @@ def wilson_score_interval(k: int, n: int, confidence: float = 0.95) -> Tuple[flo
 
 def compute_sha256(filepath: str) -> str:
     h = hashlib.sha256()
-    with open(filepath, "rb") as f:
-        while chunk := f.read(65536):
-            h.update(chunk)
+    if os.path.isdir(filepath):
+        for root, _, files in sorted(os.walk(filepath)):
+            for f in sorted(files):
+                if f.endswith(".apk"):
+                    with open(os.path.join(root, f), "rb") as fp:
+                        while chunk := fp.read(65536):
+                            h.update(chunk)
+    else:
+        with open(filepath, "rb") as f:
+            while chunk := f.read(65536):
+                h.update(chunk)
     return h.hexdigest()
 
 def compute_ece(probs: np.ndarray, y_true: np.ndarray, n_bins: int = 10) -> float:
@@ -61,9 +71,9 @@ def compute_ece(probs: np.ndarray, y_true: np.ndarray, n_bins: int = 10) -> floa
     return float(ece)
 
 def run_benchmark_suite():
-    print("="*90)
+    print("="*95)
     print("AEGIS HARDENED P5 v2 PRODUCTION BENCHMARK & REGRESSION SUITE")
-    print("="*90)
+    print("="*95)
 
     # ─── GATE 1: KOTLIN UNIT TESTS & MODEL-LOAD FAIL-SAFE VERIFICATION ────────
     print("\n[GATE 1] Running Kotlin Scanner Engine Unit Tests & Model-Load Fail-Safe Verification...")
@@ -125,76 +135,87 @@ def run_benchmark_suite():
         raw_logit = float(gbt.decision_function(np.array([vec]))[0])
         return float(1.0 / (1.0 + np.exp(calib_a * raw_logit + calib_b)))
 
-    # ─── GATE 4: SAMSUNG MUST-NEVER-FLAG OEM REGRESSION SUITE ────────────────
-    print("\n[GATE 4] Evaluating Curated Samsung OEM Regression Suite (Target: 0.00% FP)...")
-    from ml.data.real_dataset_loader import SAMSUNG_FP_CORPUS, GLOBAL_OEM_SUITE, BANKING_CORPUS, MODERN_FRAMEWORKS_BENIGN
-
-    samsung_fps = 0
-    print(f"{'Package Name':<42} | {'App Name':<22} | {'Prob':<8} | {'Score':<6} | {'Level':<10} | {'Status'}")
+    # ─── GATE 4: PHYSICAL OEM FIXTURES EVALUATION & APKS ON DISK ─────────────
+    print("\n[GATE 4] Evaluating Physical OEM APK & Split-APK Fixtures on Disk (Target: 0.00% FP)...")
+    print(f"{'OEM Platform':<14} | {'Package Name':<38} | {'SHA-256 (first 12)':<14} | {'Score':<6} | {'Level':<10} | {'Status'}")
     print("-" * 105)
 
-    for app in SAMSUNG_FP_CORPUS:
-        vec = extract_features_from_dict(app)
+    physical_fps = 0
+    total_physical = len(PHYSICAL_OEM_REGISTRY)
+
+    for reg in PHYSICAL_OEM_REGISTRY:
+        full_p = os.path.join(FIXTURES_DIR, reg["path"])
+        if not os.path.exists(full_p):
+            print(f"[FAIL] Missing physical fixture: {full_p}")
+            sys.exit(1)
+        
+        apk_hash = compute_sha256(full_p)
+        vec = extract_features_from_apk(full_p, provenance=reg["provenance"])
         prob = predict_calibrated_proba(vec)
         score = int(round(prob * 100))
         level = "DANGEROUS" if prob >= 0.85 else ("SUSPICIOUS" if prob >= 0.50 else "SAFE")
         status = "PASSED" if level == "SAFE" else "FAILED (FP)"
-        if level != "SAFE": samsung_fps += 1
-        print(f"{app['package_name']:<42} | {app['app_name']:<22} | {prob:<8.4f} | {score:<6} | {level:<10} | {status}")
+        if level != "SAFE": physical_fps += 1
 
-    samsung_fp_rate = (samsung_fps / len(SAMSUNG_FP_CORPUS)) * 100.0
-    print(f"\nSamsung OEM Suite Result: {len(SAMSUNG_FP_CORPUS) - samsung_fps} / {len(SAMSUNG_FP_CORPUS)} Passed (FP Rate: {samsung_fp_rate:.2f}%)")
-    if samsung_fps > 0:
-        print(f"[FAIL] CRITICAL REGRESSION: {samsung_fps} genuine Samsung apps flagged! Exiting with code 1.")
+        print(f"{reg['oem']:<14} | {reg['package_name']:<38} | {apk_hash[:12]:<14} | {score:<6} | {level:<10} | {status}")
+
+    fp_rate = (physical_fps / total_physical) * 100.0
+    print(f"\nPhysical Fixture Suite Result: {total_physical - physical_fps} / {total_physical} Passed (FP Rate: {fp_rate:.2f}%)")
+    if physical_fps > 0:
+        print(f"[FAIL] CRITICAL REGRESSION: {physical_fps} physical OEM apps flagged! Exiting with code 1.")
         sys.exit(1)
-    print("  * PASSED: 0.00% FP Rate on Samsung OEM applications.")
+    print("  * PASSED: 0.00% FP Rate across all physical OEM APK and Split-APK fixtures.")
 
-    # ─── GATE 4B: GLOBAL SMARTPHONE OEM SUITE (REALME, OPPO, HUAWEI, XIAOMI, ONEPLUS, VIVO) ──
-    print("\n[GATE 4B] Evaluating Global Smartphone OEM Suite (Realme, OPPO, Huawei, Xiaomi, OnePlus, Vivo)...")
-    oem_fps = 0
-    print(f"{'Package Name':<42} | {'OEM / App Name':<32} | {'Prob':<8} | {'Score':<6} | {'Level':<10} | {'Status'}")
-    print("-" * 115)
+    # ─── GATE 5: COUNTERFACTUAL STABILITY VERIFICATION ────────────────────────
+    print("\n[GATE 5] Evaluating Counterfactual Stability (Target SDK & Provenance Invariance)...")
+    print("Verifying that changing ONLY targetSdk or unresolved provenance CANNOT convert benign OEM apps to malware...")
 
-    for app in GLOBAL_OEM_SUITE:
-        vec = extract_features_from_dict(app)
-        prob = predict_calibrated_proba(vec)
-        score = int(round(prob * 100))
-        level = "DANGEROUS" if prob >= 0.85 else ("SUSPICIOUS" if prob >= 0.50 else "SAFE")
-        status = "PASSED" if level == "SAFE" else "FAILED (FP)"
-        if level != "SAFE": oem_fps += 1
-        print(f"{app['package_name']:<42} | {app['app_name']:<32} | {prob:<8.4f} | {score:<6} | {level:<10} | {status}")
+    counterfactual_failures = 0
+    for reg in PHYSICAL_OEM_REGISTRY:
+        if "banking" in reg["family"] or "sideload" in reg["family"] or "unknown" in reg["family"]:
+            continue
+        full_p = os.path.join(FIXTURES_DIR, reg["path"])
+        base_vec = extract_features_from_apk(full_p, provenance=reg["provenance"])
+        p_base = predict_calibrated_proba(base_vec)
 
-    oem_fp_rate = (oem_fps / len(GLOBAL_OEM_SUITE)) * 100.0
-    print(f"\nGlobal OEM Suite Result: {len(GLOBAL_OEM_SUITE) - oem_fps} / {len(GLOBAL_OEM_SUITE)} Passed (FP Rate: {oem_fp_rate:.2f}%)")
-    if oem_fps > 0:
-        print(f"[FAIL] CRITICAL REGRESSION: {oem_fps} genuine OEM apps flagged! Exiting with code 1.")
+        # Perturbation 1: Downgrade targetSdk to legacy 22 (pre-runtime permissions)
+        vec_sdk22 = np.copy(base_vec)
+        vec_sdk22[74] = 22.0 / 35.0 # meta_target_sdk_normalized
+        vec_sdk22[75] = 1.0         # meta_target_sdk_le_22
+        vec_sdk22[76] = 1.0         # meta_target_sdk_le_28
+        p_sdk22 = predict_calibrated_proba(vec_sdk22)
+
+        # Perturbation 2: Change provenance to UNKNOWN (missing store context)
+        vec_unknown = np.copy(base_vec)
+        vec_unknown[67:74] = 0.0
+        vec_unknown[73] = 1.0 # prov_unknown
+        p_unknown = predict_calibrated_proba(vec_unknown)
+
+        # Perturbation 3: Combined Legacy SDK 22 + UNKNOWN Provenance
+        vec_combined = np.copy(vec_sdk22)
+        vec_combined[67:74] = 0.0
+        vec_combined[73] = 1.0
+        p_combined = predict_calibrated_proba(vec_combined)
+
+        if p_sdk22 >= 0.50 or p_unknown >= 0.50 or p_combined >= 0.50:
+            print(f"[FAIL] Counterfactual failure on {reg['package_name']}: Base={p_base:.4f}, SDK22={p_sdk22:.4f}, UNKNOWN={p_unknown:.4f}, Combined={p_combined:.4f}")
+            counterfactual_failures += 1
+
+    if counterfactual_failures > 0:
+        print(f"[FAIL] {counterfactual_failures} OEM apps failed counterfactual stability! Exiting with code 1.")
         sys.exit(1)
-    print("  * PASSED: 0.00% FP Rate across Realme, OPPO, Huawei, Xiaomi, OnePlus, and Vivo OEM applications.")
+    print("  * PASSED: 100% Counterfactual Stability Confirmed (Legacy SDK age & UNKNOWN provenance never cause false convictions).")
 
-    # ─── GATE 5: INDIAN BANKING & UPI SUITE ──────────────────────────────────
-    print("\n[GATE 5] Evaluating Indian Banking & UPI Suite (Target: 0.00% FP)...")
-    banking_fps = 0
-    for app in BANKING_CORPUS:
-        vec = extract_features_from_dict(app)
-        prob = predict_calibrated_proba(vec)
-        score = int(round(prob * 100))
-        level = "DANGEROUS" if prob >= 0.85 else ("SUSPICIOUS" if prob >= 0.50 else "SAFE")
-        status = "PASSED" if level == "SAFE" else "FAILED (FP)"
-        if level != "SAFE": banking_fps += 1
-        print(f"{app['package_name']:<42} | {app['app_name']:<22} | {prob:<8.4f} | {score:<6} | {level:<10} | {status}")
-
-    if banking_fps > 0:
-        print(f"[FAIL] CRITICAL REGRESSION: Banking apps flagged! Exiting with code 1.")
-        sys.exit(1)
-    print("  * PASSED: 0.00% FP Rate on Indian Banking & UPI applications.")
-
-    # ─── GATE 6: HELD-OUT TEST CORPUS & CONFUSION MATRIX ─────────────────────
+    # ─── GATE 6: FULL HELD-OUT TEST CORPUS & CONFUSION MATRIX ─────────────────
     print("\n[GATE 6] Evaluating Full Held-Out Test Corpus (3,375 samples)...")
     y_true = np.array([d["label"] for d in test_data], dtype=np.int32)
     y_probs = np.zeros(len(test_data), dtype=np.float32)
 
     for i, d in enumerate(test_data):
-        vec = extract_features_from_dict(d)
+        if "raw_features" in d:
+            vec = np.array(d["raw_features"], dtype=np.float32)
+        else:
+            vec = extract_features_from_dict(d)
         y_probs[i] = predict_calibrated_proba(vec)
 
     y_pred_suspicious = (y_probs >= 0.50).astype(np.int32)
@@ -240,7 +261,14 @@ def run_benchmark_suite():
     for fam in families:
         fam_samples = [d for d in test_data if d.get("family") == fam and d["label"] == 1]
         cnt = len(fam_samples)
-        det = sum(1 for d in fam_samples if predict_calibrated_proba(extract_features_from_dict(d)) >= 0.50)
+        det = 0
+        for d in fam_samples:
+            if "raw_features" in d:
+                vec = np.array(d["raw_features"], dtype=np.float32)
+            else:
+                vec = extract_features_from_dict(d)
+            if predict_calibrated_proba(vec) >= 0.50:
+                det += 1
         rec = (det / cnt) * 100.0 if cnt > 0 else 0.0
         part_type = "Held-Out Family" if ("sharkbot" in fam or "triada" in fam) else "Temporal 2024 Holdout"
         print(f"{fam:<32} | {part_type:<25} | {cnt:<8} | {det:<8} | {rec:.2f}%")
@@ -262,9 +290,9 @@ def run_benchmark_suite():
         sz = os.path.getsize(p) / 1024.0
         print(f"  * {af:<26} ({sz:6.1f} KB) -> {chk}")
 
-    print("\n" + "="*90)
+    print("\n" + "="*95)
     print("[SUCCESS] ALL CI BENCHMARK GATES PASSED CLEANLY! PRODUCTION MODEL PAYSHIELD-READY.")
-    print("="*90)
+    print("="*95)
     sys.exit(0)
 
 if __name__ == "__main__":
