@@ -452,18 +452,43 @@ def build_all_physical_fixtures():
         has_native=False, max_entropy=6.50
     )
 
-    # 11. Malware Copies
-    try:
-        if os.path.exists(MALWARE_APK):
+    # 11. Malware Fixtures (Physical APKs on disk)
+    if os.path.exists(MALWARE_APK):
+        try:
             shutil.copy(MALWARE_APK, os.path.join(FIXTURES_DIR, "malware.apk"))
-    except Exception:
-        pass
+        except Exception:
+            pass
+    if not os.path.exists(os.path.join(FIXTURES_DIR, "malware.apk")):
+        build_physical_apk(
+            os.path.join(FIXTURES_DIR, "malware.apk"),
+            pkg_name="com.androrat.sample",
+            cert_name="debug_testkey",
+            target_sdk=22, min_sdk=14,
+            perms=["android.permission.READ_SMS", "android.permission.SEND_SMS", "android.permission.READ_CALL_LOG", "android.permission.RECORD_AUDIO", "android.permission.CAMERA"],
+            activities=["MainActivity"],
+            services=["BackgroundService"],
+            receivers=["BootReceiver"],
+            dex_strings=["android.telephony.SmsManager", "sendTextMessage", "content://sms", "content://call_log", "java.lang.ProcessBuilder", "/system/bin/sh", "getDeviceId"],
+            has_native=False, max_entropy=7.88
+        )
 
-    try:
-        if os.path.exists(ANTI_ANALYSIS_APK):
+    if os.path.exists(ANTI_ANALYSIS_APK):
+        try:
             shutil.copy(ANTI_ANALYSIS_APK, os.path.join(FIXTURES_DIR, "anti_analysis.apk"))
-    except Exception:
-        pass
+        except Exception:
+            pass
+    if not os.path.exists(os.path.join(FIXTURES_DIR, "anti_analysis.apk")):
+        build_physical_apk(
+            os.path.join(FIXTURES_DIR, "anti_analysis.apk"),
+            pkg_name="com.packer.evasive",
+            cert_name="debug_testkey",
+            target_sdk=30, min_sdk=21,
+            perms=["android.permission.REQUEST_INSTALL_PACKAGES", "android.permission.READ_SMS"],
+            activities=["MainActivity"],
+            services=["UnpackService"],
+            dex_strings=["dalvik.system.DexClassLoader", "content://sms", "javax.crypto.Cipher"],
+            has_native=True, max_entropy=7.98
+        )
 
     print(f"[SUCCESS] Built physical APK fixtures on disk in: {FIXTURES_DIR}")
 

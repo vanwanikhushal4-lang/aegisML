@@ -423,34 +423,34 @@ object KotlinExtractorRunner {
         vec[29] = if (manifest.permissions.any { it.contains("signature", ignoreCase = true) }) 1.0f else 0.0f
 
         // 2. DEX Usage (30-48)
-        var dexSuspCount = 0
-        fun checkDex(patterns: List<String>, idx: Int) {
+        var hostileDexCount = 0
+        fun checkDex(patterns: List<String>, idx: Int, isHostile: Boolean = false) {
             if (patterns.any { dexStrings.contains(it) }) {
                 vec[idx] = 1.0f
-                dexSuspCount++
+                if (isHostile) hostileDexCount++
             }
         }
 
-        checkDex(listOf("content://sms", "content://telephony/sms"), 30)
-        checkDex(listOf("content://call_log"), 31)
-        checkDex(listOf("content://contacts", "com.android.contacts"), 32)
-        checkDex(listOf("android.telephony.SmsManager", "sendTextMessage", "SmsManager"), 33)
-        checkDex(listOf("java.lang.ProcessBuilder", "ProcessBuilder"), 34)
-        checkDex(listOf("Runtime.getRuntime().exec", "Runtime.exec"), 35)
-        checkDex(listOf("dalvik.system.DexClassLoader", "DexClassLoader", "InMemoryDexClassLoader"), 36)
-        checkDex(listOf("java.lang.reflect.Method.invoke", "Method.invoke"), 37)
-        checkDex(listOf("java.net.Socket", "Socket(", "connectSocket"), 38)
-        checkDex(listOf("getDeviceId", "getSubscriberId", "getImei", "getSimSerialNumber"), 39)
-        checkDex(listOf("/system/bin/sh", "chmod 777", "/system/xbin/su", "which su"), 40)
-        checkDex(listOf("javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"), 41)
-        checkDex(listOf("android.util.Base64.decode", "Base64.decode", "Base64"), 42)
-        checkDex(listOf("/system/app/Superuser.apk", "test-keys", "busybox"), 43)
-        checkDex(listOf("RAW_C2_IP"), 44)
-        checkDex(listOf("AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"), 45)
-        checkDex(listOf("AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger", "KeyEvent"), 46)
-        checkDex(listOf("SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"), 47)
+        checkDex(listOf("content://sms", "content://telephony/sms"), 30, isHostile = true)
+        checkDex(listOf("content://call_log"), 31, isHostile = true)
+        checkDex(listOf("content://contacts", "com.android.contacts"), 32, isHostile = false)
+        checkDex(listOf("android.telephony.SmsManager", "sendTextMessage", "SmsManager"), 33, isHostile = true)
+        checkDex(listOf("java.lang.ProcessBuilder", "ProcessBuilder"), 34, isHostile = true)
+        checkDex(listOf("Runtime.getRuntime().exec", "Runtime.exec"), 35, isHostile = true)
+        checkDex(listOf("dalvik.system.DexClassLoader", "DexClassLoader", "InMemoryDexClassLoader"), 36, isHostile = true)
+        checkDex(listOf("java.lang.reflect.Method.invoke", "Method.invoke"), 37, isHostile = false)
+        checkDex(listOf("java.net.Socket", "Socket(", "connectSocket"), 38, isHostile = false)
+        checkDex(listOf("getDeviceId", "getSubscriberId", "getImei", "getSimSerialNumber"), 39, isHostile = true)
+        checkDex(listOf("/system/bin/sh", "chmod 777", "/system/xbin/su", "which su"), 40, isHostile = true)
+        checkDex(listOf("javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"), 41, isHostile = false)
+        checkDex(listOf("android.util.Base64.decode", "Base64.decode", "Base64"), 42, isHostile = false)
+        checkDex(listOf("/system/app/Superuser.apk", "test-keys", "busybox"), 43, isHostile = true)
+        checkDex(listOf("RAW_C2_IP"), 44, isHostile = true)
+        checkDex(listOf("AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"), 45, isHostile = true)
+        checkDex(listOf("AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger", "KeyEvent"), 46, isHostile = true)
+        checkDex(listOf("SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"), 47, isHostile = true)
 
-        vec[48] = Math.min(dexSuspCount.toFloat() / 15.0f, 1.0f)
+        vec[48] = Math.min(hostileDexCount.toFloat() / 10.0f, 1.0f)
 
         // 3. Manifest Structure (49-60)
         val actCount = Math.max(manifest.activities.size, 1)

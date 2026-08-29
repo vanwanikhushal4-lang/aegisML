@@ -120,10 +120,11 @@ def load_physical_apk_samples() -> List[Dict[str, Any]]:
         })
     return samples
 
-def build_full_dataset(num_train=8000, num_val=1500, num_test=2500):
+def build_full_dataset(num_train=8000, num_val=1500, num_test=3500):
     """
     Builds strictly disjoint Train, Validation, and Test corpora.
     Guarantees zero intersection across APK SHA-256, Cert SHA-256, Package Names, and Malware Families.
+    Maintains >= 3,000 real benign samples in test holdout.
     """
     random.seed(42)
     np.random.seed(42)

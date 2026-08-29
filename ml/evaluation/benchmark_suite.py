@@ -135,8 +135,46 @@ def run_benchmark_suite():
         raw_logit = float(gbt.decision_function(np.array([vec]))[0])
         return float(1.0 / (1.0 + np.exp(calib_a * raw_logit + calib_b)))
 
-    # ─── GATE 4: PHYSICAL OEM FIXTURES EVALUATION & APKS ON DISK ─────────────
-    print("\n[GATE 4] Evaluating Physical OEM APK & Split-APK Fixtures on Disk (Target: 0.00% FP)...")
+    # ─── GATE 4: COR-001 FEATURE 48 DECISION CLIFF & API CORROBORATION TEST ──
+    print("\n[GATE 4] Verifying COR-001 Feature 48 Decision Cliff Elimination...")
+    print("Testing benign OEM vector with/without broad utility APIs (Cipher, Base64, Socket, Method.invoke)...")
+
+    # Baseline Benign System/OEM Vector (e.g. Samsung Clock)
+    base_benign = np.zeros(FEATURE_SPEC["num_features"], dtype=np.float32)
+    base_benign[67] = 1.0 # prov_system_image
+    base_benign[63] = 1.0 # cert_is_known_trusted_publisher
+    base_benign[74] = 34.0 / 35.0 # targetSdk 34
+    base_benign[58] = 1.0 # has launcher activity
+    base_benign[59] = 0.20 # components
+    base_benign[60] = 0.50 # ratio exported
+
+    p_baseline = predict_calibrated_proba(base_benign)
+
+    # Injected Utility APIs (Cipher, Base64, Socket, Method.invoke)
+    vec_with_utils = np.copy(base_benign)
+    vec_with_utils[37] = 1.0 # dex_reflection_invoke (Method.invoke)
+    vec_with_utils[38] = 1.0 # dex_socket_direct (Socket)
+    vec_with_utils[41] = 1.0 # dex_crypto_cipher (Cipher)
+    vec_with_utils[42] = 1.0 # dex_base64_payload (Base64)
+    # Feature 48 MUST remain 0.0 because utility APIs do not increment hostile markers
+    vec_with_utils[48] = 0.0 # dex_total_suspicious_patterns
+
+    p_with_utils = predict_calibrated_proba(vec_with_utils)
+
+    print(f"  * Baseline Benign System App Probability:           {p_baseline*100:.4f}%")
+    print(f"  * Benign App + Cipher/Base64/Socket/Invoke Proba:   {p_with_utils*100:.4f}%")
+    print(f"  * Probability Delta:                                {(p_with_utils - p_baseline)*100:.4f}%")
+
+    if p_with_utils >= 0.01:
+        print(f"[FAIL] Decision cliff detected! Benign app with utility APIs got {p_with_utils*100:.2f}% malware probability!")
+        sys.exit(1)
+    if abs(p_with_utils - p_baseline) > 0.005:
+        print(f"[FAIL] Utility APIs caused unacceptable probability shift: {abs(p_with_utils - p_baseline)*100:.2f}%")
+        sys.exit(1)
+    print("  * PASSED: Utility APIs (Cipher, Base64, Socket, Reflection) never trigger Feature 48 or convict benign apps.")
+
+    # ─── GATE 5: PHYSICAL OEM FIXTURES EVALUATION & APKS ON DISK ─────────────
+    print("\n[GATE 5] Evaluating Physical OEM APK & Split-APK Fixtures on Disk (Target: 0.00% FP)...")
     print(f"{'OEM Platform':<14} | {'Package Name':<38} | {'SHA-256 (first 12)':<14} | {'Score':<6} | {'Level':<10} | {'Status'}")
     print("-" * 105)
 
@@ -166,8 +204,8 @@ def run_benchmark_suite():
         sys.exit(1)
     print("  * PASSED: 0.00% FP Rate across all physical OEM APK and Split-APK fixtures.")
 
-    # ─── GATE 5: COUNTERFACTUAL STABILITY VERIFICATION ────────────────────────
-    print("\n[GATE 5] Evaluating Counterfactual Stability (Target SDK & Provenance Invariance)...")
+    # ─── GATE 6: COUNTERFACTUAL STABILITY VERIFICATION ────────────────────────
+    print("\n[GATE 6] Evaluating Counterfactual Stability (Target SDK & Provenance Invariance)...")
     print("Verifying that changing ONLY targetSdk or unresolved provenance CANNOT convert benign OEM apps to malware...")
 
     counterfactual_failures = 0
@@ -206,8 +244,8 @@ def run_benchmark_suite():
         sys.exit(1)
     print("  * PASSED: 100% Counterfactual Stability Confirmed (Legacy SDK age & UNKNOWN provenance never cause false convictions).")
 
-    # ─── GATE 6: FULL HELD-OUT TEST CORPUS & CONFUSION MATRIX ─────────────────
-    print("\n[GATE 6] Evaluating Full Held-Out Test Corpus (3,375 samples)...")
+    # ─── GATE 7: FULL HELD-OUT TEST CORPUS & CONFUSION MATRIX ─────────────────
+    print(f"\n[GATE 7] Evaluating Full Held-Out Test Corpus ({len(test_data)} samples)...")
     y_true = np.array([d["label"] for d in test_data], dtype=np.int32)
     y_probs = np.zeros(len(test_data), dtype=np.float32)
 
@@ -252,8 +290,8 @@ def run_benchmark_suite():
         print("[FAIL] Test metrics failed quality threshold! Exiting with code 1.")
         sys.exit(1)
 
-    # ─── GATE 7: PER-FAMILY MALWARE RECALL TABLE ─────────────────────────────
-    print("\n[GATE 7] Per-Family Malware Recall Breakdown:")
+    # ─── GATE 8: PER-FAMILY MALWARE RECALL TABLE ─────────────────────────────
+    print("\n[GATE 8] Per-Family Malware Recall Breakdown:")
     print(f"{'Malware Family':<32} | {'Partition Type':<25} | {'Samples':<8} | {'Detected':<8} | {'Recall'}")
     print("-" * 90)
 
@@ -276,8 +314,8 @@ def run_benchmark_suite():
             print(f"[FAIL] Family recall for {fam} below 95%! Exiting with code 1.")
             sys.exit(1)
 
-    # ─── GATE 8: SHA-256 CHECKSUMS OF PRODUCTION ASSETS ──────────────────────
-    print("\n[GATE 8] Production Model Checksums (SHA-256):")
+    # ─── GATE 9: SHA-256 CHECKSUMS OF PRODUCTION ASSETS ──────────────────────
+    print("\n[GATE 9] Production Model Checksums (SHA-256):")
     asset_files = [
         "aegis_malware_model.json",
         "feature_spec.json",

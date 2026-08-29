@@ -140,31 +140,34 @@ def extract_features_from_apk(apk_path: str, provenance: str = "UNKNOWN") -> np.
     vec[29] = 1.0 if any("signature" in p.lower() for p in declared_perms) else 0.0
 
     # 2. Hardened Multi-DEX Bytecode Scan & Structural Asset Scan across all split APKs
-    dex_susp_count = 0
+    hostile_dex_count = 0
     total_dex_size = 0
     has_native_lib = False
     max_asset_entropy = 0.0
     html_card_mentions = 0
     zip_tampered = False
 
-    target_tokens = {
+    hostile_tokens = {
         "content://sms": 30, "content://telephony/sms": 30,
         "content://call_log": 31,
-        "content://contacts": 32, "content://com.android.contacts": 32,
         "android.telephony.SmsManager": 33, "sendTextMessage": 33, "SmsManager": 33,
         "java.lang.ProcessBuilder": 34, "ProcessBuilder": 34,
         "Runtime.getRuntime().exec": 35, "Runtime.exec": 35,
         "dalvik.system.DexClassLoader": 36, "DexClassLoader": 36, "InMemoryDexClassLoader": 36,
-        "java.lang.reflect.Method.invoke": 37, "Method.invoke": 37,
-        "java.net.Socket": 38, "Socket(": 38, "connectSocket": 38,
         "getDeviceId": 39, "getSubscriberId": 39, "getImei": 39, "getSimSerialNumber": 39,
         "/system/bin/sh": 40, "which su": 40, "chmod 777": 40, "/system/xbin/su": 40,
-        "javax.crypto.Cipher": 41, "DESede": 41, "AES/CBC/PKCS5Padding": 41,
-        "android.util.Base64.decode": 42, "Base64.decode": 42, "Base64": 42,
         "/system/app/Superuser.apk": 43, "test-keys": 43, "busybox": 43,
         "AccessibilityNodeInfo.performAction": 45, "ACTION_CLICK": 45, "dispatchGesture": 45, "AccessibilityNodeInfo": 45,
         "AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED": 46, "OnKeyListener": 46, "keylogger": 46, "KeyEvent": 46,
         "SurfaceTexture(0)": 47, "hidden_camera_capture": 47, "camera_surface_null": 47, "api.telegram.org": 47
+    }
+
+    utility_tokens = {
+        "content://contacts": 32, "content://com.android.contacts": 32,
+        "java.lang.reflect.Method.invoke": 37, "Method.invoke": 37,
+        "java.net.Socket": 38, "Socket(": 38, "connectSocket": 38,
+        "javax.crypto.Cipher": 41, "DESede": 41, "AES/CBC/PKCS5Padding": 41,
+        "android.util.Base64.decode": 42, "Base64.decode": 42, "Base64": 42
     }
 
     for single_apk in apk_files:
@@ -183,15 +186,18 @@ def extract_features_from_apk(apk_path: str, provenance: str = "UNKNOWN") -> np.
                 if info.filename.endswith(".dex"):
                     total_dex_size += len(raw_data)
                     content = raw_data.decode("latin-1", errors="ignore")
-                    for pattern, feat_idx in target_tokens.items():
+                    for pattern, feat_idx in hostile_tokens.items():
                         if pattern in content:
                             if vec[feat_idx] == 0.0:
                                 vec[feat_idx] = 1.0
-                                dex_susp_count += 1
+                                hostile_dex_count += 1
+                    for pattern, feat_idx in utility_tokens.items():
+                        if pattern in content:
+                            vec[feat_idx] = 1.0
                     if re.search(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,5}\b", content):
                         if vec[44] == 0.0:
                             vec[44] = 1.0
-                            dex_susp_count += 1
+                            hostile_dex_count += 1
                 elif info.filename.endswith(".so") or info.filename.startswith("lib/"):
                     has_native_lib = True
                 elif info.filename.startswith("assets/"):
@@ -208,7 +214,7 @@ def extract_features_from_apk(apk_path: str, provenance: str = "UNKNOWN") -> np.
         except Exception:
             pass
 
-    vec[48] = min(dex_susp_count / 15.0, 1.0)
+    vec[48] = min(hostile_dex_count / 10.0, 1.0)
 
     # 3. Manifest Components (49-60)
     activities = apk.get_activities() or []
@@ -393,38 +399,39 @@ def extract_features_from_dict(app: Dict[str, Any]) -> np.ndarray:
 
     # 2. DEX Bytecode Signals (30-48)
     dex_strings = app.get("dex_strings", [])
-    dex_susp_count = 0
-    def check_dex(patterns, idx):
-        nonlocal dex_susp_count
+    hostile_dex_count = 0
+    def check_dex(patterns, idx, is_hostile=False):
+        nonlocal hostile_dex_count
         if any(any(p.lower() in s.lower() for p in patterns) for s in dex_strings):
             vec[idx] = 1.0
-            dex_susp_count += 1
+            if is_hostile:
+                hostile_dex_count += 1
 
-    check_dex(["content://sms", "content://telephony/sms"], 30)
-    check_dex(["content://call_log"], 31)
-    check_dex(["content://contacts", "content://com.android.contacts"], 32)
-    check_dex(["android.telephony.SmsManager", "sendTextMessage", "SmsManager"], 33)
-    check_dex(["java.lang.ProcessBuilder", "ProcessBuilder"], 34)
-    check_dex(["Runtime.getRuntime().exec", "Runtime.exec"], 35)
-    check_dex(["dalvik.system.DexClassLoader", "DexClassLoader", "InMemoryDexClassLoader"], 36)
-    check_dex(["java.lang.reflect.Method.invoke", "Method.invoke"], 37)
-    check_dex(["java.net.Socket", "Socket(", "connectSocket"], 38)
-    check_dex(["getDeviceId", "getSubscriberId", "getImei", "getSimSerialNumber"], 39)
-    check_dex(["/system/bin/sh", "chmod 777", "/system/xbin/su", "which su"], 40)
-    check_dex(["javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"], 41)
-    check_dex(["android.util.Base64.decode", "Base64.decode", "Base64"], 42)
-    check_dex(["/system/app/Superuser.apk", "test-keys", "busybox"], 43)
+    check_dex(["content://sms", "content://telephony/sms"], 30, is_hostile=True)
+    check_dex(["content://call_log"], 31, is_hostile=True)
+    check_dex(["content://contacts", "content://com.android.contacts"], 32, is_hostile=False)
+    check_dex(["android.telephony.SmsManager", "sendTextMessage", "SmsManager"], 33, is_hostile=True)
+    check_dex(["java.lang.ProcessBuilder", "ProcessBuilder"], 34, is_hostile=True)
+    check_dex(["Runtime.getRuntime().exec", "Runtime.exec"], 35, is_hostile=True)
+    check_dex(["dalvik.system.DexClassLoader", "DexClassLoader", "InMemoryDexClassLoader"], 36, is_hostile=True)
+    check_dex(["java.lang.reflect.Method.invoke", "Method.invoke"], 37, is_hostile=False)
+    check_dex(["java.net.Socket", "Socket(", "connectSocket"], 38, is_hostile=False)
+    check_dex(["getDeviceId", "getSubscriberId", "getImei", "getSimSerialNumber"], 39, is_hostile=True)
+    check_dex(["/system/bin/sh", "chmod 777", "/system/xbin/su", "which su"], 40, is_hostile=True)
+    check_dex(["javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding"], 41, is_hostile=False)
+    check_dex(["android.util.Base64.decode", "Base64.decode", "Base64"], 42, is_hostile=False)
+    check_dex(["/system/app/Superuser.apk", "test-keys", "busybox"], 43, is_hostile=True)
 
     has_c2_ip = any(re.search(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,5}\b", s) for s in dex_strings)
     if has_c2_ip:
         vec[44] = 1.0
-        dex_susp_count += 1
+        hostile_dex_count += 1
 
-    check_dex(["AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"], 45)
-    check_dex(["AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger", "KeyEvent"], 46)
-    check_dex(["SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"], 47)
+    check_dex(["AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo"], 45, is_hostile=True)
+    check_dex(["AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger", "KeyEvent"], 46, is_hostile=True)
+    check_dex(["SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"], 47, is_hostile=True)
 
-    vec[48] = min(dex_susp_count / 15.0, 1.0)
+    vec[48] = min(hostile_dex_count / 10.0, 1.0)
 
     # 3. Manifest Structure (49-60)
     man = app.get("manifest", {})

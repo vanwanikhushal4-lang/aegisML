@@ -95,7 +95,7 @@
     { "index": 45, "name": "dex_accessibility_dispatch", "type": "binary", "description": "AccessibilityNodeInfo click/gesture dispatching" },
     { "index": 46, "name": "dex_keylogger_markers", "type": "binary", "description": "OnKeyEventListener or AccessibilityTextChangeEvent harvesting" },
     { "index": 47, "name": "dex_camera_surface_hidden", "type": "binary", "description": "Camera capture without preview surface / background camera" },
-    { "index": 48, "name": "dex_total_suspicious_patterns", "type": "float", "description": "Normalized count of suspicious DEX API calls (count / 15.0)" },
+    { "index": 48, "name": "dex_total_suspicious_patterns", "type": "float", "description": "Normalized count of hostile/sensitive DEX execution markers (count / 10.0)" },
     { "index": 49, "name": "manifest_exported_activities", "type": "float", "description": "Normalized exported activities count (count / 20.0)" },
     { "index": 50, "name": "manifest_exported_services", "type": "float", "description": "Normalized exported services count (count / 10.0)" },
     { "index": 51, "name": "manifest_exported_receivers", "type": "float", "description": "Normalized exported broadcast receivers (count / 10.0)" },

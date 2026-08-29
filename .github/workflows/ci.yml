@@ -1,0 +1,47 @@
+name: AEGIS P5 v2 PayShield CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Grant Execute Permission to Gradle Wrapper
+        run: chmod +x gradlew
+
+      - name: Build Physical APK & Split-APK Evaluation Fixtures
+        run: |
+          python ml/evaluation/build_real_fixtures.py
+
+      - name: Run Direct Production Kotlin Feature Parity Harness
+        run: |
+          python ml/evaluation/verify_train_serve_parity.py
+
+      - name: Run Full Multi-Gate CI Benchmark & Regression Suite
+        run: |
+          python ml/evaluation/benchmark_suite.py

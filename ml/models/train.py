@@ -144,5 +144,8 @@ def train_pipeline():
 
     print("Model training & calibration complete.")
 
+    from ml.export.exporter import export_all
+    export_all()
+
 if __name__ == "__main__":
     train_pipeline()

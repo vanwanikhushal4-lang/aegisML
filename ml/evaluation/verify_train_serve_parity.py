@@ -30,24 +30,44 @@ def compile_kotlin_extractor():
     print("Compiling KotlinExtractorRunner.kt using kotlinc compiler...")
     runner_src = os.path.join(EVAL_DIR, "KotlinExtractorRunner.kt")
     compiler_jar = os.path.join(PROJECT_DIR, ".tools/kotlinc/lib/kotlin-compiler.jar")
+    libs_cp = os.pathsep.join([
+        os.path.join(EVAL_DIR, "libs/android.jar"),
+        os.path.join(EVAL_DIR, "libs/json.jar"),
+        os.path.join(EVAL_DIR, "libs/javax.inject.jar")
+    ])
 
-    cmd = [
-        "java", "-cp", compiler_jar,
-        "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler",
-        runner_src,
-        "-include-runtime",
-        "-d", KOTLIN_JAR
-    ]
-    res = subprocess.run(cmd, capture_output=True, text=True)
-    if res.returncode != 0:
-        print("ERROR: Failed to compile KotlinExtractorRunner.kt:")
-        print(res.stderr)
+    if os.path.exists(compiler_jar):
+        cmd = [
+            "java", "-jar", compiler_jar,
+            "-cp", libs_cp,
+            os.path.join(PROJECT_DIR, "scanner/src/main/java/com/aegis/guard/scanner/HardenedZipReader.kt"),
+            os.path.join(PROJECT_DIR, "scanner/src/main/java/com/aegis/guard/scanner/StructuralPackerDetector.kt"),
+            os.path.join(PROJECT_DIR, "scanner/src/main/java/com/aegis/guard/scanner/AppFeatureExtractor.kt"),
+            runner_src,
+            "-include-runtime",
+            "-d", KOTLIN_JAR
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0:
+            print("ERROR: Failed to compile Kotlin extractor:")
+            print(res.stderr or res.stdout)
+            sys.exit(1)
+        print("Compiled kotlin_extractor.jar successfully.")
+    elif os.path.exists(KOTLIN_JAR):
+        print(f"Using pre-built {KOTLIN_JAR}.")
+    else:
+        print("ERROR: No kotlin compiler or pre-built jar found.")
         sys.exit(1)
-    print("Compiled kotlin_extractor.jar successfully.")
 
 def run_kotlin_extractor(target_path: str, provenance: str) -> np.ndarray:
+    libs_cp = os.pathsep.join([
+        os.path.join(EVAL_DIR, "libs/android.jar"),
+        os.path.join(EVAL_DIR, "libs/json.jar"),
+        os.path.join(EVAL_DIR, "libs/javax.inject.jar"),
+        KOTLIN_JAR
+    ])
     cmd = [
-        "java", "-cp", KOTLIN_JAR,
+        "java", "-cp", libs_cp,
         "com.aegis.guard.scanner.KotlinExtractorRunner",
         target_path,
         provenance
@@ -97,13 +117,17 @@ def run_all_parity_checks():
 
     compile_kotlin_extractor()
 
+    malware_fixture = os.path.join(FIXTURES_DIR, "malware.apk")
+    if not os.path.exists(malware_fixture) and os.path.exists("C:/Users/user/Downloads/androrat/AndroRAT/malware.apk"):
+        malware_fixture = "C:/Users/user/Downloads/androrat/AndroRAT/malware.apk"
+
     cohorts = [
         ("1. Benign OEM Split-APK Set", os.path.join(FIXTURES_DIR, "oem_samsung_clock_split"), "SYSTEM_IMAGE"),
         ("2. Benign OEM Single APK", os.path.join(FIXTURES_DIR, "oem_samsung_calculator.apk"), "SYSTEM_IMAGE"),
         ("3. Verified Store Banking", os.path.join(FIXTURES_DIR, "store_banking_yono.apk"), "VERIFIED_STORE"),
         ("4. Sideloaded Media APK", os.path.join(FIXTURES_DIR, "sideloaded_vlc.apk"), "DOWNLOADED_APK"),
         ("5. Unknown Provenance Tool", os.path.join(FIXTURES_DIR, "unknown_prov_tool.apk"), "UNKNOWN"),
-        ("6. In-the-Wild Real Malware", "C:/Users/user/Downloads/androrat/AndroRAT/malware.apk", "DOWNLOADED_APK")
+        ("6. In-the-Wild Real Malware", malware_fixture, "DOWNLOADED_APK")
     ]
 
     all_passed = True
