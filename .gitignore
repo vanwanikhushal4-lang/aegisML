@@ -17,5 +17,5 @@ captures
 venv/
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 .pytest_cache/

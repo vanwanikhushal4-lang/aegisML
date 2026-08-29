@@ -1,5 +1,5 @@
-﻿"""
-AEGIS Train / Serve Parity Verification Suite
+"""
+AEGIS Train / Serve Parity Verification Suite (Schema v2.0.0 — 92 Dimensions)
 Executes the compiled JVM Java extractor on real malware.apk and diffs against Python Androguard extractor.
 """
 
@@ -14,39 +14,40 @@ from ml.features.extractor import extract_features_from_apk, FEATURE_SPEC
 
 REAL_MALWARE_APK = "C:/Users/user/Downloads/androrat/AndroRAT/malware.apk"
 
-def extract_via_jvm(apk_path: str) -> np.ndarray:
+def extract_via_jvm(apk_path: str, provenance: str = "UNKNOWN") -> np.ndarray:
     """Runs the compiled Java/JVM extractor on the real APK and parses the resulting vector."""
-    cmd = ["java", "-cp", "ml/evaluation", "JvmExtractor", apk_path]
+    cmd = ["java", "-cp", "ml/evaluation", "JvmExtractor", apk_path, provenance]
     res = subprocess.run(cmd, capture_output=True, text=True, check=True)
     out = res.stdout.strip()
     raw_vec = json.loads(out)
     return np.array(raw_vec, dtype=np.float32)
 
 def verify_parity():
-    print("="*80)
-    print("AEGIS TRAIN / SERVE PARITY VERIFICATION (Real APK: malware.apk)")
-    print("  [Python (Androguard)] vs [JVM (Java 17 / Kotlin-equivalent)]")
-    print("="*80)
+    print("="*85)
+    print("AEGIS TRAIN / SERVE PARITY VERIFICATION (Schema v2.0.0 - 92 Dimensions)")
+    print("  [Python (Androguard)] vs [JVM (Production Java 17 / Kotlin Equivalent)]")
+    print(f"  Target Real APK: {REAL_MALWARE_APK}")
+    print("="*85)
 
     if not os.path.exists(REAL_MALWARE_APK):
         print(f"Error: Real malware APK not found at {REAL_MALWARE_APK}")
         return False
 
-    train_vector = extract_features_from_apk(REAL_MALWARE_APK)
-    jvm_vector = extract_via_jvm(REAL_MALWARE_APK)
+    train_vector = extract_features_from_apk(REAL_MALWARE_APK, provenance="UNKNOWN")
+    jvm_vector = extract_via_jvm(REAL_MALWARE_APK, provenance="UNKNOWN")
 
     max_diff = 0.0
     diff_count = 0
 
     print(f"{'Idx':<4} | {'Feature Name':<35} | {'Train (Python)':<15} | {'Serve (JVM)':<15} | {'Status'}")
-    print("-" * 85)
+    print("-" * 88)
 
     for i in range(FEATURE_SPEC["num_features"]):
         f_name = FEATURE_SPEC["features"][i]["name"]
         v_train = float(train_vector[i])
         v_jvm = float(jvm_vector[i])
         diff = abs(v_train - v_jvm)
-        
+
         if diff > max_diff:
             max_diff = diff
 
@@ -58,12 +59,12 @@ def verify_parity():
         if v_train > 0.0 or v_jvm > 0.0 or diff > 1e-4:
             print(f"{i:02d}   | {f_name:<35} | {v_train:<15.4f} | {v_jvm:<15.4f} | {status}")
 
-    print("-" * 85)
-    print(f"Max Absolute Difference Across All 80 Dimensions: {max_diff:.6f}")
-    print(f"Mismatched Dimensions:                             {diff_count} / 80")
+    print("-" * 88)
+    print(f"Max Absolute Difference Across All 92 Dimensions: {max_diff:.6f}")
+    print(f"Mismatched Dimensions:                             {diff_count} / {FEATURE_SPEC['num_features']}")
 
     if diff_count == 0:
-        print("\n[SUCCESS] TRAIN/SERVE PARITY VERIFIED: 100% Exact 80-Feature Alignment Between Python & JVM!")
+        print("\n[SUCCESS] TRAIN/SERVE PARITY VERIFIED: 100% Exact 92-Feature Alignment Between Python & JVM!")
         return True
     else:
         print(f"\n[FAILURE] TRAIN/SERVE SKEW DETECTED: {diff_count} features differ.")

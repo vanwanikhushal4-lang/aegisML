@@ -16,7 +16,9 @@ data class StructuralAnalysisResult(
     val isZipTampered: Boolean = false,
     val isThinDex: Boolean = false,
     val hasEncryptedAsset: Boolean = false,
-    val hasWebviewPhishing: Boolean = false
+    val hasWebviewPhishing: Boolean = false,
+    val hasNativeLib: Boolean = false,
+    val htmlCardMentions: Int = 0
 )
 
 /**
@@ -125,7 +127,9 @@ class StructuralPackerDetector @Inject constructor() {
             isZipTampered = zipTampered,
             isThinDex = isThinDex,
             hasEncryptedAsset = hasEncryptedAsset,
-            hasWebviewPhishing = hasWebviewPhishing
+            hasWebviewPhishing = hasWebviewPhishing,
+            hasNativeLib = hasNativeLib,
+            htmlCardMentions = htmlCardMentions
         )
     }
 
