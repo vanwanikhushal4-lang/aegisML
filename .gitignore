@@ -11,6 +11,8 @@ captures
 *.apk
 *.aar
 .kotlin
+*.jar
+.tools/
 
 # Python / Virtualenv
 .venv/

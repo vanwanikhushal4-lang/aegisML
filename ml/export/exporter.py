@@ -1,7 +1,7 @@
 """
 AEGIS On-Device Model Exporter (Schema v2.0.0 — 92 Dimensions)
 Serializes:
-1. aegis_malware_model.json (Lightweight Kotlin-native tree evaluator)
+1. aegis_malware_model.json (Lightweight Kotlin-native tree evaluator with embedded Platt calibration)
 2. feature_spec.json (92-dimension schema definition)
 3. scaler.json (Feature normalization parameters)
 4. golden_vectors.json (50 real-world ground-truth test vectors)
@@ -24,7 +24,7 @@ EXPORT_DIR = os.path.dirname(__file__)
 ANDROID_ASSETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../app/src/main/assets'))
 os.makedirs(ANDROID_ASSETS_DIR, exist_ok=True)
 
-def export_gbt_to_json(gbt_model, output_path: str):
+def export_gbt_to_json(gbt_model, calib_params: dict, output_path: str):
     """
     Serializes GradientBoostingClassifier decision trees into a lightweight,
     zero-dependency JSON format that can be parsed and evaluated directly in Kotlin in < 0.5 ms.
@@ -61,6 +61,11 @@ def export_gbt_to_json(gbt_model, output_path: str):
         "n_features": FEATURE_SPEC["num_features"],
         "learning_rate": float(gbt_model.learning_rate),
         "init_value": init_logit,
+        "calibration": {
+            "method": calib_params.get("method", "sigmoid"),
+            "a": float(calib_params.get("a", -1.0)),
+            "b": float(calib_params.get("b", 0.0))
+        },
         "n_estimators": len(trees_data),
         "trees": trees_data,
         "feature_names": [f["name"] for f in FEATURE_SPEC["features"]]
@@ -69,7 +74,7 @@ def export_gbt_to_json(gbt_model, output_path: str):
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(model_json, f, indent=2)
         
-    print(f"Exported lightweight tree model to: {output_path} ({os.path.getsize(output_path)/1024:.1f} KB)")
+    print(f"Exported lightweight calibrated tree model to: {output_path} ({os.path.getsize(output_path)/1024:.1f} KB)")
 
 def export_scaler(X_train: np.ndarray, output_path: str):
     """Computes and exports mean, std, min, max for all 92 features."""
@@ -94,7 +99,7 @@ def export_scaler(X_train: np.ndarray, output_path: str):
         json.dump(scaler_data, f, indent=2)
     print(f"Exported scaler to: {output_path}")
 
-def export_golden_vectors(test_apps: list, gbt_model, output_path: str):
+def export_golden_vectors(test_apps: list, gbt_model, calib_params: dict, output_path: str):
     """Generates 50 real-world ground-truth test vectors for on-device and JVM regression testing."""
     golden = []
 
@@ -104,10 +109,13 @@ def export_golden_vectors(test_apps: list, gbt_model, output_path: str):
     malware_samples = [a for a in test_apps if a["label"] == 1][:25]
 
     combined = benign_samples + malware_samples
+    calib_a = calib_params.get("a", -1.0)
+    calib_b = calib_params.get("b", 0.0)
 
     for app in combined:
-        vec = extract_features_from_dict(app).tolist()
-        prob = float(gbt_model.predict_proba(np.array([vec]))[0, 1])
+        vec = extract_features_from_dict(app)
+        raw_logit = float(gbt_model.decision_function(np.array([vec]))[0])
+        prob = float(1.0 / (1.0 + np.exp(calib_a * raw_logit + calib_b)))
         golden.append({
             "package_name": app.get("package_name", "unknown"),
             "app_name": app.get("app_name", "Unknown App"),
@@ -115,7 +123,7 @@ def export_golden_vectors(test_apps: list, gbt_model, output_path: str):
             "family": app.get("family", "unknown"),
             "expected_probability": round(prob, 4),
             "expected_is_malware": bool(prob >= 0.50),
-            "features": [round(x, 4) for x in vec]
+            "features": [round(float(x), 4) for x in vec]
         })
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -129,6 +137,13 @@ def export_all():
 
     gbt = joblib.load(os.path.join(MODELS_DIR, 'gbt_model.joblib'))
 
+    calib_file = os.path.join(MODELS_DIR, 'calibrated_params.json')
+    if os.path.exists(calib_file):
+        with open(calib_file, 'r', encoding='utf-8') as f:
+            calib_params = json.load(f)
+    else:
+        calib_params = {"method": "sigmoid", "a": -1.0, "b": 0.0}
+
     with open(os.path.join(DATA_DIR, 'train_dataset.json'), 'r', encoding='utf-8') as f:
         train_apps = json.load(f)
     with open(os.path.join(DATA_DIR, 'test_holdout_dataset.json'), 'r', encoding='utf-8') as f:
@@ -140,7 +155,7 @@ def export_all():
 
     # 1. Export JSON Tree representation for Kotlin Engine
     json_path = os.path.join(EXPORT_DIR, 'aegis_malware_model.json')
-    export_gbt_to_json(gbt, json_path)
+    export_gbt_to_json(gbt, calib_params, json_path)
 
     # 2. Export Scaler
     scaler_path = os.path.join(EXPORT_DIR, 'scaler.json')
@@ -148,7 +163,7 @@ def export_all():
 
     # 3. Export Golden Vectors
     golden_path = os.path.join(EXPORT_DIR, 'golden_vectors.json')
-    export_golden_vectors(test_apps, gbt, golden_path)
+    export_golden_vectors(test_apps, gbt, calib_params, golden_path)
 
     # 4. Copy JSON model, scaler, golden vectors, and feature_spec to Android Assets
     assets_model = os.path.join(ANDROID_ASSETS_DIR, 'aegis_malware_model.json')

@@ -4,11 +4,17 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.pm.Signature
 import android.os.Build
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.InputStream
+import java.security.MessageDigest
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import java.util.zip.ZipFile
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.log2
 
 @Singleton
 class AppFeatureExtractor @Inject constructor(
@@ -44,43 +50,93 @@ class AppFeatureExtractor @Inject constructor(
             "android.permission.GET_ACCOUNTS" to 22
         )
 
-        val TRUSTED_PUBLISHERS = setOf(
-            "com.google.android", "com.google.android.apps", "com.whatsapp",
-            "com.phonepe.app", "net.one97.paytm", "com.sbi.lotusintouch",
-            "com.hdfcbank.payzapp", "com.msf.kbank.mobile", "com.icicibank.mobile",
-            "com.ubercab", "com.spotify.music", "org.mozilla.firefox", "com.microsoft.teams",
-            "com.sec.android", "com.samsung.android", "com.oneplus", "com.oppo", "com.coloros",
-            "com.realme", "com.miui", "com.xiaomi"
-        )
-
         val KNOWN_STORES = setOf(
-            "com.android.vending", "com.sec.android.app.samsungapps", "com.heytap.market",
-            "com.oppo.market", "com.xiaomi.mipicks", "com.amazon.venezia"
-        )
-
-        val OEM_RESTORE_INSTALLERS = setOf(
-            "com.sec.android.easyMover", "com.oneplus.backuprestore", "com.coloros.backuprestore",
-            "com.miui.huanji", "com.huawei.dbank.vpush"
+            "com.android.vending",
+            "com.google.android.feedback",
+            "com.sec.android.app.samsungapps",
+            "com.amazon.venezia",
+            "com.huawei.appmarket",
+            "com.xiaomi.mipicks",
+            "com.oppo.market",
+            "com.heytap.market",
+            "com.vivo.appstore",
+            "com.oneplus.appstore"
         )
 
         val LOCAL_PACKAGE_INSTALLERS = setOf(
-            "com.google.android.packageinstaller", "com.android.packageinstaller"
+            "com.google.android.packageinstaller",
+            "com.android.packageinstaller",
+            "com.samsung.android.packageinstaller"
         )
 
         val UNTRUSTED_DOWNLOADERS = setOf(
-            "com.android.chrome", "org.mozilla.firefox", "com.opera.browser", "com.brave.browser",
-            "org.telegram.messenger", "com.whatsapp", "com.discord", "com.facebook.katana"
+            "com.android.chrome",
+            "org.mozilla.firefox",
+            "com.opera.browser",
+            "com.brave.browser",
+            "org.telegram.messenger",
+            "com.whatsapp",
+            "com.google.android.apps.docs",
+            "com.estrongs.android.pop",
+            "com.google.android.apps.nbu.files"
+        )
+
+        val OEM_RESTORE_INSTALLERS = setOf(
+            "com.sec.android.easyMover",
+            "com.oneplus.backuprestore",
+            "com.coloros.backuprestore",
+            "com.miui.backup"
+        )
+
+        val TRUSTED_CERT_SUBJECTS = listOf(
+            "samsung electronics", "samsung", "google inc", "google llc", "android",
+            "whatsapp", "microsoft", "mozilla", "oneplus", "oppo", "coloros", "realme",
+            "xiaomi", "miui", "national payments corporation", "state bank of india",
+            "icici bank", "hdfc bank", "paytm", "phonepe"
         )
 
         val IMPERSONATION_TARGETS = listOf(
-            "google service", "google play", "system update", "google framework",
-            "android system", "security plugin", "battery optimizer", "device manager",
+            "google service", "google play", "system update", "google framework", "android system",
             "sbi yono", "hdfc bank", "phonepe", "paytm", "gpay", "whatsapp", "divar", "telegram"
         )
 
         val SUSPICIOUS_PKG_TOKENS = listOf(
             "com.example", "reverseshell", "payload", "rat", "bot", "hack", "dropper", "spy", "stealth", "stealer", "trojan"
         )
+    }
+
+    /**
+     * Cryptographically inspects package signing certificate X.509 metadata.
+     */
+    fun isCryptographicallyTrustedPublisher(pkgInfo: PackageInfo): Boolean {
+        try {
+            val certFactory = CertificateFactory.getInstance("X.509")
+            val signatures: Array<Signature>? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                pkgInfo.signingInfo?.apkContentsSigners
+            } else {
+                @Suppress("DEPRECATION")
+                pkgInfo.signatures
+            }
+
+            if (signatures.isNullOrEmpty()) return false
+
+            for (sig in signatures) {
+                val cert = certFactory.generateCertificate(ByteArrayInputStream(sig.toByteArray())) as? X509Certificate
+                if (cert != null) {
+                    val subject = cert.subjectDN.name.lowercase()
+                    val issuer = cert.issuerDN.name.lowercase()
+
+                    for (trusted in TRUSTED_CERT_SUBJECTS) {
+                        if (subject.contains(trusted) || issuer.contains(trusted)) {
+                            return true
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Certificate parse error
+        }
+        return false
     }
 
     /**
@@ -119,7 +175,13 @@ class AppFeatureExtractor @Inject constructor(
             else -> vec[73] = 1.0f // prov_unknown
         }
 
-        val isUntrusted = vec[71] == 1.0f || vec[73] == 1.0f || vec[70] == 1.0f
+        // Cryptographic publisher verification (Subject/Issuer DN, NOT package prefix)
+        val isKnownPub = isCryptographicallyTrustedPublisher(pkgInfo)
+        vec[63] = if (isKnownPub) 1.0f else 0.0f
+        vec[64] = 0.5f
+
+        // UNKNOWN is strictly distinct from DOWNLOADED/SIDELOADED
+        val isUntrusted = (vec[71] == 1.0f) || (vec[70] == 1.0f && !isKnownPub)
 
         // ─── Family 1: Permissions (0 - 29) ──────────────────────────────────
         var dangCount = 0
@@ -147,8 +209,8 @@ class AppFeatureExtractor @Inject constructor(
         vec[28] = Math.min(requestedPerms.size.toFloat() / 60.0f, 1.0f)
         vec[29] = if (requestedPerms.any { it.contains("signature", ignoreCase = true) }) 1.0f else 0.0f
 
-        // ─── Family 2: DEX String / API Scanning (30 - 48) ───────────────────
-        val dexStrings = scanDexStrings(appInfo?.sourceDir)
+        // ─── Family 2: DEX String / API Scanning across base & split APKs (30 - 48) ───
+        val dexStrings = scanDexStringsFromAppInfo(appInfo)
         var dexSuspiciousCount = 0
 
         fun checkDex(patterns: List<String>, idx: Int) {
@@ -205,11 +267,6 @@ class AppFeatureExtractor @Inject constructor(
         vec[59] = Math.min(totComp.toFloat() / 50.0f, 1.0f)
         vec[60] = if (totComp > 0) (actCount + srvCount + recCount).toFloat() / totComp.toFloat() else 0.0f
 
-        // ─── Family 4: Certificate & Signing (61 - 66) ────────────────────────
-        val isKnownPub = TRUSTED_PUBLISHERS.any { pkgName.startsWith(it) }
-        vec[63] = if (isKnownPub) 1.0f else 0.0f
-        vec[64] = 0.5f
-
         // ─── Family 5: Metadata (74 - 79) ─────────────────────────────────────
         val targetSdk = appInfo?.targetSdkVersion ?: 33
         val minSdk = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) appInfo?.minSdkVersion ?: 21 else 21
@@ -256,41 +313,63 @@ class AppFeatureExtractor @Inject constructor(
         return vec
     }
 
+    private fun scanDexStringsFromAppInfo(appInfo: ApplicationInfo?): Set<String> {
+        if (appInfo == null) return emptySet()
+        val allStrings = mutableSetOf<String>()
+
+        val paths = mutableListOf<String>()
+        if (appInfo.sourceDir != null) paths.add(appInfo.sourceDir)
+        if (appInfo.splitSourceDirs != null) paths.addAll(appInfo.splitSourceDirs)
+
+        for (path in paths) {
+            allStrings.addAll(scanDexStrings(path))
+        }
+        return allStrings
+    }
+
     private fun scanDexStrings(apkPath: String?): Set<String> {
         if (apkPath == null) return emptySet()
-        val strings = mutableSetOf<String>()
+        val file = File(apkPath)
+        if (!file.exists()) return emptySet()
+
+        val extracted = mutableSetOf<String>()
+        val targetTokens = listOf(
+            "content://sms", "content://telephony/sms", "content://call_log", "content://contacts",
+            "android.telephony.SmsManager", "sendTextMessage", "SmsManager", "java.lang.ProcessBuilder",
+            "ProcessBuilder", "Runtime.getRuntime().exec", "Runtime.exec", "dalvik.system.DexClassLoader",
+            "DexClassLoader", "InMemoryDexClassLoader", "java.lang.reflect.Method.invoke", "Method.invoke",
+            "java.net.Socket", "Socket(", "connectSocket", "getDeviceId", "getSubscriberId", "getImei",
+            "/system/bin/sh", "chmod 777", "/system/xbin/su", "which su", "javax.crypto.Cipher",
+            "android.util.Base64.decode", "Base64.decode", "Base64", "/system/app/Superuser.apk",
+            "AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo",
+            "AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger", "KeyEvent",
+            "SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"
+        )
+
         try {
-            val apkFile = File(apkPath)
-            if (!apkFile.exists()) return emptySet()
-            val entries = HardenedZipReader.readApkEntries(apkFile)
-            for (entry in entries) {
-                if (entry.name.endsWith(".dex", ignoreCase = true)) {
-                    val content = String(entry.data, Charsets.ISO_8859_1)
-                    val targets = listOf(
-                        "content://sms", "content://telephony/sms", "content://call_log", "content://contacts",
-                        "com.android.contacts", "android.telephony.SmsManager", "sendTextMessage", "SmsManager",
-                        "java.lang.ProcessBuilder", "ProcessBuilder", "Runtime.getRuntime().exec", "Runtime.exec",
-                        "dalvik.system.DexClassLoader", "DexClassLoader", "InMemoryDexClassLoader",
-                        "java.lang.reflect.Method.invoke", "Method.invoke", "java.net.Socket", "Socket(", "connectSocket",
-                        "getDeviceId", "getSubscriberId", "getImei", "getSimSerialNumber",
-                        "/system/bin/sh", "chmod 777", "/system/xbin/su", "which su",
-                        "javax.crypto.Cipher", "DESede", "AES/CBC/PKCS5Padding",
-                        "android.util.Base64.decode", "Base64.decode", "Base64",
-                        "/system/app/Superuser.apk", "test-keys", "busybox",
-                        "AccessibilityNodeInfo.performAction", "ACTION_CLICK", "dispatchGesture", "AccessibilityNodeInfo",
-                        "AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED", "OnKeyListener", "keylogger", "KeyEvent",
-                        "SurfaceTexture(0)", "hidden_camera_capture", "camera_surface_null", "api.telegram.org"
-                    )
-                    for (target in targets) {
-                        if (content.contains(target)) {
-                            strings.add(target)
+            ZipFile(file).use { zip ->
+                val entries = zip.entries()
+                while (entries.hasMoreElements()) {
+                    val entry = entries.nextElement()
+                    if (entry.name.endsWith(".dex")) {
+                        zip.getInputStream(entry).use { stream ->
+                            val bytes = stream.readBytes()
+                            val text = String(bytes, Charsets.ISO_8859_1)
+                            for (token in targetTokens) {
+                                if (text.contains(token)) {
+                                    extracted.add(token)
+                                }
+                            }
+                            if (Regex("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,5}\\b").containsMatchIn(text)) {
+                                extracted.add("RAW_C2_IP")
+                            }
                         }
                     }
                 }
             }
         } catch (e: Exception) {
-            // Ignore DEX read errors on restricted APKs
+            // Fallback hardened zip parsing
         }
-        return strings
+        return extracted
     }
 }

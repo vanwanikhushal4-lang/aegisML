@@ -2,6 +2,8 @@
   {
     "package_name": "com.sec.android.app.clockpackage",
     "app_name": "Samsung Clock",
+    "sha256": "26b0cbeadb61458fd9dacbbedae3453c73e346bba3311197683f6dc5c1a34416",
+    "cert_sha256": "fcb3182cec2d7677048c989111b628bb8ff697ed5e1e8c0c4b5c0c2981e32b28",
     "provenance": "SYSTEM_IMAGE",
     "is_system_app": true,
     "target_sdk": 34,
@@ -44,12 +46,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_clock",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.samsung.android.spay",
     "app_name": "Samsung Wallet",
+    "sha256": "1385c505b0ff020437b9c7d4544c093114211bb73a8c8868773a8a3626946761",
+    "cert_sha256": "a59cae2fa892c06f9672a9b68e7aae3d9e10d71931b5a4ccd721ce6b59d7c494",
     "provenance": "SYSTEM_IMAGE",
     "is_system_app": true,
     "target_sdk": 34,
@@ -93,12 +98,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_wallet",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.samsung.android.video",
     "app_name": "Samsung TV Plus",
+    "sha256": "f8b5aaced293ec138559311a53bd6a5dac47614846fecee6a9833bd61985a6f6",
+    "cert_sha256": "c55aa3f404ad5395a6b2bf9cdd9bc41605eaab51980b0fbcb4c7f448ab1ffb50",
     "provenance": "UPDATED_SYSTEM_APP",
     "is_system_app": true,
     "target_sdk": 34,
@@ -139,12 +147,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_tv",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.samsung.android.news",
     "app_name": "Samsung News",
+    "sha256": "ac017f29a9626773c4be8572d167fdcd7a4598b4e5fe0339fdeb77b20102ae34",
+    "cert_sha256": "3f4f32f59e0848262231b654a8ad7ea82289babaf522078a483350cb2ffac887",
     "provenance": "VERIFIED_STORE",
     "is_system_app": false,
     "target_sdk": 34,
@@ -185,12 +196,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_news",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.samsung.android.kidsinstaller",
     "app_name": "Samsung Kids",
+    "sha256": "f3c7a3348be703a1952f927cdb2a28bc9592654f79aec7ef806a80b0f953f86a",
+    "cert_sha256": "df6087eb79191c4c976e49967c1523e23157d6f001ee0802792a38b045d27d7e",
     "provenance": "SYSTEM_IMAGE",
     "is_system_app": true,
     "target_sdk": 34,
@@ -228,12 +242,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_kids",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.samsung.android.calendar",
     "app_name": "Samsung Calendar",
+    "sha256": "226368aabb7cc39a267a82ef7d691ae43f0c3682120f7ee97d6bb32bef0f9569",
+    "cert_sha256": "825235bc92565aaa9715c7dbc66716a782e51decb00a89ffe832b27ba307f84e",
     "provenance": "SYSTEM_IMAGE",
     "is_system_app": true,
     "target_sdk": 34,
@@ -272,12 +289,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_calendar",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.samsung.android.app.reminder",
     "app_name": "Samsung Reminder",
+    "sha256": "95641351aa985285ca372f762238dce79a90d6264e37ccded4a7e215c519bf75",
+    "cert_sha256": "aa6177bd640921854a2c122921087d4a861808cd647feddfd858e6ab9d567988",
     "provenance": "SYSTEM_IMAGE",
     "is_system_app": true,
     "target_sdk": 34,
@@ -315,12 +335,15 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_reminder",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.sec.android.app.popupcalculator",
     "app_name": "Samsung Calculator",
+    "sha256": "176a0d1f7d948c2aa8f853ea823c2fe95f7cbbe3f4e9844babd8c6501004414b",
+    "cert_sha256": "87ef2f9de4d69fb48680b9fa799d34c49ca948eb3c86984a1a8e7380d2d8cfed",
     "provenance": "SYSTEM_IMAGE",
     "is_system_app": true,
     "target_sdk": 34,
@@ -356,33 +379,32 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_calc",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.sec.android.easyMover",
     "app_name": "Samsung Smart Switch",
+    "sha256": "9fa17c4298e4cf57509087c3fb5a7df7f91b98e3a7b30056e41f5de727c57b96",
+    "cert_sha256": "9b9b384f215b4ed2319ef5dc328f3336c3f9dab17aa907a15630ab8002f4e80e",
     "provenance": "RESTORED_OEM",
     "is_system_app": true,
     "target_sdk": 34,
     "min_sdk": 26,
     "permissions": [
-      "android.permission.READ_SMS",
-      "android.permission.WRITE_SMS",
-      "android.permission.READ_CALL_LOG",
-      "android.permission.WRITE_CALL_LOG",
+      "android.permission.READ_PHONE_STATE",
       "android.permission.READ_CONTACTS",
-      "android.permission.WRITE_CONTACTS",
-      "android.permission.CAMERA",
+      "android.permission.READ_CALL_LOG",
+      "android.permission.READ_SMS",
       "android.permission.ACCESS_FINE_LOCATION"
     ],
     "dex_strings": [
       "content://sms",
       "content://call_log",
       "content://contacts",
-      "java.net.Socket",
       "javax.crypto.Cipher",
-      "Base64.decode"
+      "java.net.Socket"
     ],
     "manifest": {
       "exported_activities": 3,
@@ -390,7 +412,7 @@
       "exported_receivers": 2,
       "has_boot_receiver": true,
       "has_launcher_activity": true,
-      "total_components": 32
+      "total_components": 40
     },
     "certificate": {
       "is_debug_key": false,
@@ -400,18 +422,21 @@
       "cert_count": 1
     },
     "structural": {
-      "max_asset_entropy": 7.91,
+      "max_asset_entropy": 7.94,
       "has_native_lib": true,
       "is_thin_dex": false,
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "samsung_system",
+    "family": "test_samsung_oem_switch",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.sbi.lotusintouch",
     "app_name": "YONO SBI",
+    "sha256": "5b9e96779538a4030fecca918b6d5e9e843b57adb54818399967bde5ff7b297b",
+    "cert_sha256": "278483984e8ce07287d757619f7cb3b8bd4216bdc7fb4d5e311e277cf1df9d6f",
     "provenance": "VERIFIED_STORE",
     "is_system_app": false,
     "target_sdk": 34,
@@ -423,7 +448,9 @@
       "android.permission.CAMERA",
       "android.permission.USE_BIOMETRIC",
       "android.permission.READ_CONTACTS",
-      "android.permission.READ_SMS"
+      "android.permission.READ_SMS",
+      "android.permission.RECEIVE_SMS",
+      "android.permission.POST_NOTIFICATIONS"
     ],
     "dex_strings": [
       "https://sbiyono.sbi",
@@ -435,16 +462,13 @@
     ],
     "manifest": {
       "exported_activities": 2,
-      "exported_services": 0,
-      "exported_receivers": 1,
+      "exported_services": 1,
+      "exported_receivers": 2,
       "has_boot_receiver": false,
-      "has_sms_receiver": false,
+      "has_sms_receiver": true,
       "has_foreground_service": false,
-      "has_accessibility_service": false,
-      "has_device_admin": false,
-      "has_system_alert_window": false,
       "has_launcher_activity": true,
-      "total_components": 24
+      "total_components": 32
     },
     "certificate": {
       "is_debug_key": false,
@@ -454,59 +478,166 @@
       "cert_count": 1
     },
     "structural": {
-      "max_asset_entropy": 7.92,
+      "max_asset_entropy": 7.96,
       "has_native_lib": true,
       "is_thin_dex": false,
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "banking_upi",
+    "family": "test_banking_sbi",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   },
   {
     "package_name": "com.phonepe.app",
-    "app_name": "PhonePe",
+    "app_name": "PhonePe UPI",
+    "sha256": "356d22b1aab59dc2f3969fb37960ebef16768208cf67e50adb27e3076e582d56",
+    "cert_sha256": "b85d8a963ebf1bcc390802886e5452d3b89e5ce83681c0daf3431b229f24e2ea",
     "provenance": "VERIFIED_STORE",
     "is_system_app": false,
     "target_sdk": 34,
-    "min_sdk": 23,
+    "min_sdk": 24,
     "permissions": [
       "android.permission.INTERNET",
       "android.permission.ACCESS_FINE_LOCATION",
       "android.permission.READ_PHONE_STATE",
       "android.permission.CAMERA",
-      "android.permission.READ_CONTACTS",
       "android.permission.USE_BIOMETRIC",
+      "android.permission.READ_CONTACTS",
+      "android.permission.READ_SMS",
       "android.permission.RECEIVE_SMS",
-      "android.permission.READ_SMS"
+      "android.permission.SEND_SMS",
+      "android.permission.POST_NOTIFICATIONS"
     ],
     "dex_strings": [
-      "https://phonepe.com",
+      "content://contacts",
       "android.telephony.SmsManager",
-      "content://sms",
-      "androidx.camera.view.PreviewView",
       "javax.crypto.Cipher",
-      "Base64",
+      "androidx.biometric.BiometricPrompt",
       "java.net.Socket"
     ],
     "manifest": {
-      "exported_activities": 3,
-      "exported_services": 1,
-      "exported_receivers": 2,
+      "exported_activities": 4,
+      "exported_services": 2,
+      "exported_receivers": 3,
       "has_boot_receiver": false,
       "has_sms_receiver": true,
       "has_foreground_service": true,
-      "has_accessibility_service": false,
-      "has_device_admin": false,
-      "has_system_alert_window": false,
       "has_launcher_activity": true,
-      "total_components": 32
+      "total_components": 40
     },
     "certificate": {
       "is_debug_key": false,
       "is_self_signed": false,
       "is_known_publisher": true,
-      "validity_years": 25.0,
+      "validity_years": 30.0,
+      "cert_count": 1
+    },
+    "structural": {
+      "max_asset_entropy": 7.97,
+      "has_native_lib": true,
+      "is_thin_dex": false,
+      "is_zip_tampered": false
+    },
+    "label": 0,
+    "family": "test_banking_phonepe",
+    "is_synthetic_augmentation": false,
+    "release_year": 2024
+  },
+  {
+    "package_name": "com.google.android.apps.nbu.paisa.user",
+    "app_name": "Google Pay",
+    "sha256": "a9f0920607d5640b9bfcf878867755cb2a08b005c9222099603a7cb975ae7165",
+    "cert_sha256": "5c9b822af77d1215eae7d74f1338abe09ad510080154c20aff47beaefdf2aa24",
+    "provenance": "VERIFIED_STORE",
+    "is_system_app": false,
+    "target_sdk": 34,
+    "min_sdk": 24,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CAMERA",
+      "android.permission.USE_BIOMETRIC",
+      "android.permission.READ_CONTACTS",
+      "android.permission.READ_SMS",
+      "android.permission.RECEIVE_SMS",
+      "android.permission.POST_NOTIFICATIONS"
+    ],
+    "dex_strings": [
+      "content://contacts",
+      "javax.crypto.Cipher",
+      "com.google.android.gms",
+      "java.net.Socket"
+    ],
+    "manifest": {
+      "exported_activities": 3,
+      "exported_services": 2,
+      "exported_receivers": 2,
+      "has_boot_receiver": false,
+      "has_sms_receiver": true,
+      "has_launcher_activity": true,
+      "total_components": 35
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 30.0,
+      "cert_count": 1
+    },
+    "structural": {
+      "max_asset_entropy": 7.95,
+      "has_native_lib": true,
+      "is_thin_dex": false,
+      "is_zip_tampered": false
+    },
+    "label": 0,
+    "family": "test_banking_gpay",
+    "is_synthetic_augmentation": false,
+    "release_year": 2024
+  },
+  {
+    "package_name": "net.one97.paytm",
+    "app_name": "Paytm Payments",
+    "sha256": "1e60f3048c8a6a22013556ba82d181933c55315b4ad2352dba232d9d76d9cbcd",
+    "cert_sha256": "bc01d68bf1f26fc7b06a04e4d77f7a7b89a912eecffbe3ffa3e844374390ae3f",
+    "provenance": "VERIFIED_STORE",
+    "is_system_app": false,
+    "target_sdk": 34,
+    "min_sdk": 24,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CAMERA",
+      "android.permission.USE_BIOMETRIC",
+      "android.permission.READ_CONTACTS",
+      "android.permission.READ_SMS",
+      "android.permission.RECEIVE_SMS",
+      "android.permission.POST_NOTIFICATIONS"
+    ],
+    "dex_strings": [
+      "content://contacts",
+      "javax.crypto.Cipher",
+      "androidx.biometric.BiometricPrompt",
+      "java.net.Socket"
+    ],
+    "manifest": {
+      "exported_activities": 5,
+      "exported_services": 3,
+      "exported_receivers": 3,
+      "has_boot_receiver": false,
+      "has_sms_receiver": true,
+      "has_foreground_service": true,
+      "has_launcher_activity": true,
+      "total_components": 55
+    },
+    "certificate": {
+      "is_debug_key": false,
+      "is_self_signed": false,
+      "is_known_publisher": true,
+      "validity_years": 30.0,
       "cert_count": 1
     },
     "structural": {
@@ -516,112 +647,8 @@
       "is_zip_tampered": false
     },
     "label": 0,
-    "family": "banking_upi",
-    "release_year": 2024
-  },
-  {
-    "package_name": "net.one97.paytm",
-    "app_name": "Paytm",
-    "provenance": "VERIFIED_STORE",
-    "is_system_app": false,
-    "target_sdk": 34,
-    "min_sdk": 23,
-    "permissions": [
-      "android.permission.INTERNET",
-      "android.permission.ACCESS_FINE_LOCATION",
-      "android.permission.READ_PHONE_STATE",
-      "android.permission.CAMERA",
-      "android.permission.READ_CONTACTS",
-      "android.permission.USE_BIOMETRIC",
-      "android.permission.RECEIVE_SMS",
-      "android.permission.READ_SMS"
-    ],
-    "dex_strings": [
-      "https://paytm.com",
-      "android.telephony.SmsManager",
-      "content://sms",
-      "javax.crypto.Cipher",
-      "Base64.decode"
-    ],
-    "manifest": {
-      "exported_activities": 4,
-      "exported_services": 2,
-      "exported_receivers": 2,
-      "has_boot_receiver": false,
-      "has_sms_receiver": true,
-      "has_foreground_service": true,
-      "has_accessibility_service": false,
-      "has_device_admin": false,
-      "has_system_alert_window": false,
-      "has_launcher_activity": true,
-      "total_components": 40
-    },
-    "certificate": {
-      "is_debug_key": false,
-      "is_self_signed": false,
-      "is_known_publisher": true,
-      "validity_years": 25.0,
-      "cert_count": 1
-    },
-    "structural": {
-      "max_asset_entropy": 7.91,
-      "has_native_lib": true,
-      "is_thin_dex": false,
-      "is_zip_tampered": false
-    },
-    "label": 0,
-    "family": "banking_upi",
-    "release_year": 2024
-  },
-  {
-    "package_name": "com.google.android.apps.nbu.paisa.user",
-    "app_name": "Google Pay",
-    "provenance": "VERIFIED_STORE",
-    "is_system_app": false,
-    "target_sdk": 34,
-    "min_sdk": 23,
-    "permissions": [
-      "android.permission.INTERNET",
-      "android.permission.ACCESS_FINE_LOCATION",
-      "android.permission.READ_PHONE_STATE",
-      "android.permission.CAMERA",
-      "android.permission.READ_CONTACTS",
-      "android.permission.USE_BIOMETRIC"
-    ],
-    "dex_strings": [
-      "https://pay.google.com",
-      "com.google.android.gms",
-      "javax.crypto.Cipher",
-      "java.net.Socket"
-    ],
-    "manifest": {
-      "exported_activities": 2,
-      "exported_services": 1,
-      "exported_receivers": 1,
-      "has_boot_receiver": false,
-      "has_sms_receiver": false,
-      "has_foreground_service": false,
-      "has_accessibility_service": false,
-      "has_device_admin": false,
-      "has_system_alert_window": false,
-      "has_launcher_activity": true,
-      "total_components": 28
-    },
-    "certificate": {
-      "is_debug_key": false,
-      "is_self_signed": false,
-      "is_known_publisher": true,
-      "validity_years": 30.0,
-      "cert_count": 1
-    },
-    "structural": {
-      "max_asset_entropy": 7.89,
-      "has_native_lib": true,
-      "is_thin_dex": false,
-      "is_zip_tampered": false
-    },
-    "label": 0,
-    "family": "banking_upi",
+    "family": "test_banking_paytm",
+    "is_synthetic_augmentation": false,
     "release_year": 2024
   }
 ]
