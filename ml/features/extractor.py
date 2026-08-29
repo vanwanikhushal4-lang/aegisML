@@ -44,10 +44,12 @@ DANGEROUS_PERMISSIONS = {
 }
 
 TRUSTED_CERT_SUBJECTS = [
-    "samsung electronics", "samsung knox", "google llc", "google inc.", "google inc",
+    "samsung electronics", "samsung knox", "samsung", "google llc", "google inc.", "google inc", "android",
     "whatsapp llc", "microsoft corporation", "mozilla corporation", "oneplus",
-    "oppo", "coloros", "realme", "xiaomi", "miui", "national payments corporation",
-    "state bank of india", "icici bank", "hdfc bank", "paytm", "phonepe"
+    "oppo", "coloros", "realme", "xiaomi", "miui", "hyperos", "huawei", "honor",
+    "harmonyos", "emui", "vivo", "iqoo", "funtouchos", "originos", "motorola", "lenovo",
+    "transsion", "infinix", "tecno", "asus", "nothing technology",
+    "national payments corporation", "state bank of india", "icici bank", "hdfc bank", "paytm", "phonepe"
 ]
 
 def compute_entropy(data: bytes) -> float:

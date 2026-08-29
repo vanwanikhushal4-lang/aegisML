@@ -127,7 +127,7 @@ def run_benchmark_suite():
 
     # ─── GATE 4: SAMSUNG MUST-NEVER-FLAG OEM REGRESSION SUITE ────────────────
     print("\n[GATE 4] Evaluating Curated Samsung OEM Regression Suite (Target: 0.00% FP)...")
-    from ml.data.real_dataset_loader import SAMSUNG_FP_CORPUS, BANKING_CORPUS, MODERN_FRAMEWORKS_BENIGN
+    from ml.data.real_dataset_loader import SAMSUNG_FP_CORPUS, GLOBAL_OEM_SUITE, BANKING_CORPUS, MODERN_FRAMEWORKS_BENIGN
 
     samsung_fps = 0
     print(f"{'Package Name':<42} | {'App Name':<22} | {'Prob':<8} | {'Score':<6} | {'Level':<10} | {'Status'}")
@@ -148,6 +148,28 @@ def run_benchmark_suite():
         print(f"[FAIL] CRITICAL REGRESSION: {samsung_fps} genuine Samsung apps flagged! Exiting with code 1.")
         sys.exit(1)
     print("  * PASSED: 0.00% FP Rate on Samsung OEM applications.")
+
+    # ─── GATE 4B: GLOBAL SMARTPHONE OEM SUITE (REALME, OPPO, HUAWEI, XIAOMI, ONEPLUS, VIVO) ──
+    print("\n[GATE 4B] Evaluating Global Smartphone OEM Suite (Realme, OPPO, Huawei, Xiaomi, OnePlus, Vivo)...")
+    oem_fps = 0
+    print(f"{'Package Name':<42} | {'OEM / App Name':<32} | {'Prob':<8} | {'Score':<6} | {'Level':<10} | {'Status'}")
+    print("-" * 115)
+
+    for app in GLOBAL_OEM_SUITE:
+        vec = extract_features_from_dict(app)
+        prob = predict_calibrated_proba(vec)
+        score = int(round(prob * 100))
+        level = "DANGEROUS" if prob >= 0.85 else ("SUSPICIOUS" if prob >= 0.50 else "SAFE")
+        status = "PASSED" if level == "SAFE" else "FAILED (FP)"
+        if level != "SAFE": oem_fps += 1
+        print(f"{app['package_name']:<42} | {app['app_name']:<32} | {prob:<8.4f} | {score:<6} | {level:<10} | {status}")
+
+    oem_fp_rate = (oem_fps / len(GLOBAL_OEM_SUITE)) * 100.0
+    print(f"\nGlobal OEM Suite Result: {len(GLOBAL_OEM_SUITE) - oem_fps} / {len(GLOBAL_OEM_SUITE)} Passed (FP Rate: {oem_fp_rate:.2f}%)")
+    if oem_fps > 0:
+        print(f"[FAIL] CRITICAL REGRESSION: {oem_fps} genuine OEM apps flagged! Exiting with code 1.")
+        sys.exit(1)
+    print("  * PASSED: 0.00% FP Rate across Realme, OPPO, Huawei, Xiaomi, OnePlus, and Vivo OEM applications.")
 
     # ─── GATE 5: INDIAN BANKING & UPI SUITE ──────────────────────────────────
     print("\n[GATE 5] Evaluating Indian Banking & UPI Suite (Target: 0.00% FP)...")

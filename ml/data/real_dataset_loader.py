@@ -141,6 +141,174 @@ SAMSUNG_FP_CORPUS = [
     }
 ]
 
+GLOBAL_OEM_SUITE = [
+    # ─── 1. Xiaomi / Redmi / POCO (MIUI / HyperOS) ───────────────────────────
+    {
+        "package_name": "com.miui.securitycenter", "app_name": "MIUI Security",
+        "sha256": make_sha256("test_oem_xiaomi_securitycenter"),
+        "cert_sha256": make_sha256("cert_xiaomi_official_sec"),
+        "provenance": "SYSTEM_IMAGE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.SYSTEM_ALERT_WINDOW", "android.permission.REQUEST_INSTALL_PACKAGES", "android.permission.POST_NOTIFICATIONS"],
+        "dex_strings": ["com.miui.security", "javax.crypto.Cipher", "okhttp3.OkHttpClient", "java.net.Socket"],
+        "manifest": {"exported_activities": 4, "exported_services": 3, "exported_receivers": 3, "has_boot_receiver": True, "has_system_alert_window": True, "has_launcher_activity": True, "total_components": 40},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.95, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_xiaomi_sec", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.miui.calculator", "app_name": "Mi Calculator",
+        "sha256": make_sha256("test_oem_xiaomi_calculator"),
+        "cert_sha256": make_sha256("cert_xiaomi_official_calc"),
+        "provenance": "SYSTEM_IMAGE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.VIBRATE", "android.permission.INTERNET"],
+        "dex_strings": ["com.miui.calculator", "java.lang.Math", "javax.crypto.Cipher"],
+        "manifest": {"exported_activities": 1, "exported_services": 0, "exported_receivers": 0, "has_launcher_activity": True, "total_components": 8},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.85, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_xiaomi_calc", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.xiaomi.mipicks", "app_name": "GetApps (Mi Store)",
+        "sha256": make_sha256("test_oem_xiaomi_getapps"),
+        "cert_sha256": make_sha256("cert_xiaomi_official_store"),
+        "provenance": "VERIFIED_STORE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.INTERNET", "android.permission.REQUEST_INSTALL_PACKAGES", "android.permission.INSTALL_PACKAGES", "android.permission.ACCESS_NETWORK_STATE", "android.permission.POST_NOTIFICATIONS"],
+        "dex_strings": ["com.xiaomi.market", "okhttp3.OkHttpClient", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 5, "exported_services": 3, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 45},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.96, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_xiaomi_store", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+
+    # ─── 2. OnePlus (OxygenOS) ───────────────────────────────────────────────
+    {
+        "package_name": "com.oneplus.backuprestore", "app_name": "OnePlus Clone Phone",
+        "sha256": make_sha256("test_oem_oneplus_clonephone"),
+        "cert_sha256": make_sha256("cert_oneplus_official_switch"),
+        "provenance": "RESTORED_OEM", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.READ_PHONE_STATE", "android.permission.READ_CONTACTS", "android.permission.READ_CALL_LOG", "android.permission.READ_SMS", "android.permission.ACCESS_FINE_LOCATION"],
+        "dex_strings": ["content://sms", "content://call_log", "content://contacts", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 3, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 36},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.92, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_oneplus_clone", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.oneplus.calculator", "app_name": "OnePlus Calculator",
+        "sha256": make_sha256("test_oem_oneplus_calculator"),
+        "cert_sha256": make_sha256("cert_oneplus_official_calc"),
+        "provenance": "SYSTEM_IMAGE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.VIBRATE"],
+        "dex_strings": ["com.oneplus.calculator", "java.lang.Math", "javax.crypto.Cipher"],
+        "manifest": {"exported_activities": 1, "exported_services": 0, "exported_receivers": 0, "has_launcher_activity": True, "total_components": 6},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.84, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_oneplus_calc", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+
+    # ─── 3. OPPO & Realme (ColorOS / Realme UI) ──────────────────────────────
+    {
+        "package_name": "com.coloros.backuprestore", "app_name": "Realme / OPPO Clone Phone",
+        "sha256": make_sha256("test_oem_oppo_realme_clone"),
+        "cert_sha256": make_sha256("cert_oppo_realme_official_switch"),
+        "provenance": "RESTORED_OEM", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.READ_PHONE_STATE", "android.permission.READ_CONTACTS", "android.permission.READ_CALL_LOG", "android.permission.READ_SMS", "android.permission.ACCESS_FINE_LOCATION"],
+        "dex_strings": ["content://sms", "content://call_log", "content://contacts", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 3, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 38},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.93, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_realme_clone", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.heytap.market", "app_name": "HeyTap App Market (Realme/OPPO)",
+        "sha256": make_sha256("test_oem_heytap_market"),
+        "cert_sha256": make_sha256("cert_heytap_oppo_store"),
+        "provenance": "VERIFIED_STORE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.INTERNET", "android.permission.REQUEST_INSTALL_PACKAGES", "android.permission.INSTALL_PACKAGES", "android.permission.POST_NOTIFICATIONS"],
+        "dex_strings": ["com.heytap.market", "okhttp3.OkHttpClient", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 4, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 40},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.97, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_realme_store", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.coloros.calculator", "app_name": "Realme / OPPO Calculator",
+        "sha256": make_sha256("test_oem_oppo_calculator"),
+        "cert_sha256": make_sha256("cert_oppo_realme_calc"),
+        "provenance": "SYSTEM_IMAGE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.VIBRATE"],
+        "dex_strings": ["com.coloros.calculator", "java.lang.Math", "javax.crypto.Cipher"],
+        "manifest": {"exported_activities": 1, "exported_services": 0, "exported_receivers": 0, "has_launcher_activity": True, "total_components": 8},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.82, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_realme_calc", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+
+    # ─── 4. Huawei & Honor (HarmonyOS / EMUI / MagicOS) ──────────────────────
+    {
+        "package_name": "com.huawei.appmarket", "app_name": "Huawei AppGallery",
+        "sha256": make_sha256("test_oem_huawei_appgallery"),
+        "cert_sha256": make_sha256("cert_huawei_official_appmarket"),
+        "provenance": "VERIFIED_STORE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.INTERNET", "android.permission.REQUEST_INSTALL_PACKAGES", "android.permission.INSTALL_PACKAGES", "android.permission.ACCESS_NETWORK_STATE", "android.permission.POST_NOTIFICATIONS"],
+        "dex_strings": ["com.huawei.appmarket", "okhttp3.OkHttpClient", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 6, "exported_services": 4, "exported_receivers": 3, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 50},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.98, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_huawei_store", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.huawei.systemmanager", "app_name": "Huawei Optimizer",
+        "sha256": make_sha256("test_oem_huawei_optimizer"),
+        "cert_sha256": make_sha256("cert_huawei_official_systemmanager"),
+        "provenance": "SYSTEM_IMAGE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.SYSTEM_ALERT_WINDOW", "android.permission.REQUEST_INSTALL_PACKAGES"],
+        "dex_strings": ["com.huawei.systemmanager", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 4, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 35},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.95, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_huawei_optimizer", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.huawei.kobackup", "app_name": "Huawei Phone Clone",
+        "sha256": make_sha256("test_oem_huawei_phoneclone"),
+        "cert_sha256": make_sha256("cert_huawei_official_clone"),
+        "provenance": "RESTORED_OEM", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.READ_PHONE_STATE", "android.permission.READ_CONTACTS", "android.permission.READ_CALL_LOG", "android.permission.READ_SMS", "android.permission.ACCESS_FINE_LOCATION"],
+        "dex_strings": ["content://sms", "content://call_log", "content://contacts", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 3, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 35},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.91, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_huawei_clone", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+
+    # ─── 5. Vivo & iQOO (FuntouchOS / OriginOS) ──────────────────────────────
+    {
+        "package_name": "com.vivo.easyshare", "app_name": "Vivo EasyShare",
+        "sha256": make_sha256("test_oem_vivo_easyshare"),
+        "cert_sha256": make_sha256("cert_vivo_official_switch"),
+        "provenance": "RESTORED_OEM", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.READ_PHONE_STATE", "android.permission.READ_CONTACTS", "android.permission.READ_CALL_LOG", "android.permission.READ_SMS", "android.permission.ACCESS_FINE_LOCATION"],
+        "dex_strings": ["content://sms", "content://call_log", "content://contacts", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 3, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 36},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.93, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_vivo_share", "is_synthetic_augmentation": False, "release_year": 2024
+    },
+    {
+        "package_name": "com.iqoo.secure", "app_name": "iQOO / Vivo iManager",
+        "sha256": make_sha256("test_oem_vivo_imanager"),
+        "cert_sha256": make_sha256("cert_vivo_official_imanager"),
+        "provenance": "SYSTEM_IMAGE", "is_system_app": True, "target_sdk": 34, "min_sdk": 26,
+        "permissions": ["android.permission.INTERNET", "android.permission.SYSTEM_ALERT_WINDOW", "android.permission.REQUEST_INSTALL_PACKAGES"],
+        "dex_strings": ["com.iqoo.secure", "javax.crypto.Cipher", "java.net.Socket"],
+        "manifest": {"exported_activities": 3, "exported_services": 2, "exported_receivers": 2, "has_boot_receiver": True, "has_launcher_activity": True, "total_components": 30},
+        "certificate": {"is_debug_key": False, "is_self_signed": False, "is_known_publisher": True, "validity_years": 30.0, "cert_count": 1},
+        "structural": {"max_asset_entropy": 7.94, "has_native_lib": True, "is_thin_dex": False, "is_zip_tampered": False},
+        "label": 0, "family": "test_oem_vivo_sec", "is_synthetic_augmentation": False, "release_year": 2024
+    }
+]
+
 BANKING_CORPUS = [
     {
         "package_name": "com.sbi.lotusintouch", "app_name": "YONO SBI",
@@ -283,7 +451,7 @@ def build_full_dataset(num_train=8000, num_val=1500, num_test=2500):
     # Generate strictly disjoint Benign Train & Validation pools
     train_benign = []
     val_benign = []
-    test_benign = list(SAMSUNG_FP_CORPUS) + list(BANKING_CORPUS) + list(MODERN_FRAMEWORKS_BENIGN)
+    test_benign = list(SAMSUNG_FP_CORPUS) + list(GLOBAL_OEM_SUITE) + list(BANKING_CORPUS) + list(MODERN_FRAMEWORKS_BENIGN)
 
     # Build Train Benign (General store & system apps)
     for i in range(num_train):

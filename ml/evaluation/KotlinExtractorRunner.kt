@@ -43,10 +43,12 @@ object KotlinExtractorRunner {
     )
 
     val TRUSTED_CERT_SUBJECTS = listOf(
-        "samsung electronics", "samsung", "google inc", "google llc", "android",
+        "samsung electronics", "samsung knox", "samsung", "google inc", "google llc", "android",
         "whatsapp", "microsoft", "mozilla", "oneplus", "oppo", "coloros", "realme",
-        "xiaomi", "miui", "national payments corporation", "state bank of india",
-        "icici bank", "hdfc bank", "paytm", "phonepe"
+        "xiaomi", "miui", "hyperos", "huawei", "honor", "harmonyos", "emui",
+        "vivo", "iqoo", "funtouchos", "originos", "motorola", "lenovo",
+        "transsion", "infinix", "tecno", "asus", "nothing technology",
+        "national payments corporation", "state bank of india", "icici bank", "hdfc bank", "paytm", "phonepe"
     )
 
     data class ZipItem(val name: String, val data: ByteArray, val isEncryptedFlag: Boolean)

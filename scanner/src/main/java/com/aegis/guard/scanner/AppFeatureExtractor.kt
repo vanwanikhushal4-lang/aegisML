@@ -66,7 +66,10 @@ class AppFeatureExtractor @Inject constructor(
         val LOCAL_PACKAGE_INSTALLERS = setOf(
             "com.google.android.packageinstaller",
             "com.android.packageinstaller",
-            "com.samsung.android.packageinstaller"
+            "com.samsung.android.packageinstaller",
+            "com.miui.packageinstaller",
+            "com.coloros.packageinstaller",
+            "com.huawei.appmarket"
         )
 
         val UNTRUSTED_DOWNLOADERS = setOf(
@@ -85,14 +88,18 @@ class AppFeatureExtractor @Inject constructor(
             "com.sec.android.easyMover",
             "com.oneplus.backuprestore",
             "com.coloros.backuprestore",
-            "com.miui.backup"
+            "com.miui.backup",
+            "com.huawei.kobackup",
+            "com.vivo.easyshare"
         )
 
         val TRUSTED_CERT_SUBJECTS = listOf(
-            "samsung electronics", "samsung", "google inc", "google llc", "android",
+            "samsung electronics", "samsung knox", "samsung", "google inc", "google llc", "android",
             "whatsapp", "microsoft", "mozilla", "oneplus", "oppo", "coloros", "realme",
-            "xiaomi", "miui", "national payments corporation", "state bank of india",
-            "icici bank", "hdfc bank", "paytm", "phonepe"
+            "xiaomi", "miui", "hyperos", "huawei", "honor", "harmonyos", "emui",
+            "vivo", "iqoo", "funtouchos", "originos", "motorola", "lenovo",
+            "transsion", "infinix", "tecno", "asus", "nothing technology",
+            "national payments corporation", "state bank of india", "icici bank", "hdfc bank", "paytm", "phonepe"
         )
 
         val IMPERSONATION_TARGETS = listOf(
